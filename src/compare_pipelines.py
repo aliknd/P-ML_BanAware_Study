@@ -22,7 +22,7 @@ Produces a new output directory structured as:
 All original models/encoders are copied into models_saved, even if already present. New models are trained only if originals are missing.
 
 Usage:
-    python compare_pipelines.py --user ID10 --fruit Nectarine --scenario Use [--output-dir results_compare]
+    python3 -m src.compare_pipelines --user ID10 --fruit Nectarine --scenario Use [--output-dir results_compare]
 """
 import argparse
 import shutil
@@ -88,13 +88,12 @@ def run_global_supervised(fruit, scenario, user, base_dir):
     old_model = GS_ROOT / f"{fruit}_{scenario}" / f"{fruit}_{scenario}_cnn.keras"
     new_model = models_dir / f"global_{fruit}_{scenario}.keras"
 
-    # Copy or train
     if old_model.exists():
         shutil.copy(old_model, new_model)
         model = load_model(new_model)
     else:
         X, y = collect_scenario(fruit, scenario)
-        train_idx, test_idx = train_test_split(
+        train_idx, _ = train_test_split(
             np.arange(len(y)), test_size=0.1, random_state=42, stratify=y
         )
         tr_idx, val_idx = train_test_split(
@@ -109,11 +108,8 @@ def run_global_supervised(fruit, scenario, user, base_dir):
         model.fit(
             X[tr_idx], y[tr_idx],
             validation_data=(X[val_idx], y[val_idx]),
-            epochs=EPOCHS,
-            batch_size=BATCH,
-            class_weight=cw,
-            callbacks=[es],
-            verbose=2,
+            epochs=EPOCHS, batch_size=BATCH,
+            class_weight=cw, callbacks=[es], verbose=2
         )
         model.save(new_model)
 
@@ -130,10 +126,10 @@ def run_global_supervised(fruit, scenario, user, base_dir):
     X_u = np.stack([np.vstack([h, s]).T for h, s in zip(rows['hr_seq'], rows['st_seq'])])
     y_u = rows['state_val'].values
     preds = model.predict(X_u, verbose=0).flatten()
-    df, _, _ = bootstrap_threshold_metrics(y_u, preds)
+    df, auc_mean, auc_std = bootstrap_threshold_metrics(y_u, preds)
     df.to_csv(u_dir / 'bootstrap_metrics.csv', index=False)
     plot_thresholds(y_u, preds, u_dir, f"{user} {fruit}_{scenario} (global_supervised)")
-    return df
+    return df, auc_mean, auc_std
 
 
 def run_personal_ssl(user, fruit, scenario, base_dir):
@@ -143,7 +139,6 @@ def run_personal_ssl(user, fruit, scenario, base_dir):
     models_dir.mkdir(parents=True, exist_ok=True)
     results_dir.mkdir(exist_ok=True)
 
-    # Data prep
     hr_df, st_df = load_signal_data(Path(BASE_DATA_DIR)/user)
     pos = load_label_data(Path(BASE_DATA_DIR)/user, fruit, scenario)
     neg = load_label_data(Path(BASE_DATA_DIR)/user, fruit, 'None')
@@ -156,7 +151,9 @@ def run_personal_ssl(user, fruit, scenario, base_dir):
     # HR encoder
     old_hr = PS_ROOT / user / 'hr_encoder.keras'
     new_hr = models_dir / 'hr_encoder.keras'
-    if old_hr.exists(): shutil.copy(old_hr, new_hr); enc_hr = load_model(new_hr)
+    if old_hr.exists():
+        shutil.copy(old_hr, new_hr)
+        enc_hr = load_model(new_hr)
     else:
         vals = np.vstack(df_all['hr_seq'].tolist())
         segs = create_windows(vals, WINDOW_SIZE, STEP_SIZE).astype('float32')
@@ -173,7 +170,9 @@ def run_personal_ssl(user, fruit, scenario, base_dir):
     # Steps encoder
     old_st = PS_ROOT / user / 'steps_encoder.keras'
     new_st = models_dir / 'steps_encoder.keras'
-    if old_st.exists(): shutil.copy(old_st, new_st); enc_st = load_model(new_st)
+    if old_st.exists():
+        shutil.copy(old_st, new_st)
+        enc_st = load_model(new_st)
     else:
         vals = np.vstack(df_all['st_seq'].tolist())
         segs = create_windows(vals, WINDOW_SIZE, STEP_SIZE).astype('float32')
@@ -203,24 +202,29 @@ def run_personal_ssl(user, fruit, scenario, base_dir):
     # Classifier
     old_clf = PS_ROOT / user / f"{fruit}_{scenario}" / 'classifier.keras'
     new_clf = models_dir / 'classifier.keras'
-    if old_clf.exists(): shutil.copy(old_clf, new_clf); clf = load_model(new_clf)
+    if old_clf.exists():
+        shutil.copy(old_clf, new_clf)
+        clf = load_model(new_clf)
     else:
         cw_vals = compute_class_weight('balanced', classes=np.unique(ytr), y=ytr)
         cw = dict(enumerate(cw_vals))
         clf = build_clf(X_feat.shape[1])
         clf.compile(optimizer=Adam(1e-3), loss='binary_crossentropy', metrics=['accuracy'])
         clf.fit(
-            Xtr, ytr, validation_split=0.1,
-            epochs=CLF_EPOCHS, batch_size=16,
-            class_weight=cw, verbose=2
+            Xtr, ytr,
+            validation_split=0.1,
+            epochs=CLF_EPOCHS,
+            batch_size=16,
+            class_weight=cw,
+            verbose=2
         )
         clf.save(new_clf)
         plot_thresholds(yte, clf.predict(Xte).flatten(), results_dir, f"{user} {fruit}_{scenario} (personal_ssl)")
 
     preds = clf.predict(Xte).flatten()
-    df, _, _ = bootstrap_threshold_metrics(yte, preds)
+    df, auc_mean, auc_std = bootstrap_threshold_metrics(yte, preds)
     df.to_csv(results_dir / 'bootstrap_metrics.csv', index=False)
-    return df
+    return df, auc_mean, auc_std
 
 
 def run_global_ssl(user, fruit, scenario, base_dir):
@@ -275,17 +279,20 @@ def run_global_ssl(user, fruit, scenario, base_dir):
         ])
         clf.compile(optimizer=Adam(1e-3), loss='binary_crossentropy', metrics=['accuracy'])
         clf.fit(
-            Xtr, ytr, validation_split=0.1,
-            epochs=GSSL_CLF_EPOCHS, batch_size=16,
-            class_weight=cw, verbose=2
+            Xtr, ytr,
+            validation_split=0.1,
+            epochs=GSSL_CLF_EPOCHS,
+            batch_size=16,
+            class_weight=cw,
+            verbose=2
         )
         clf.save(new_clf)
         plot_thresholds(yte, clf.predict(Xte).flatten(), results_dir, f"{user} {fruit}_{scenario} (global_ssl)")
 
     preds = clf.predict(Xte).flatten()
-    df, _, _ = bootstrap_threshold_metrics(yte, preds)
+    df, auc_mean, auc_std = bootstrap_threshold_metrics(yte, preds)
     df.to_csv(results_dir / 'bootstrap_metrics.csv', index=False)
-    return df
+    return df, auc_mean, auc_std
 
 # --------------------------------------------------------------------------- #
 # Main
@@ -302,24 +309,29 @@ if __name__ == '__main__':
     if root.exists(): shutil.rmtree(root)
     root.mkdir(parents=True, exist_ok=True)
 
-    df_gs = run_global_supervised(args.fruit, args.scenario, args.user, root)
-    df_ps = run_personal_ssl(args.user, args.fruit, args.scenario, root)
-    df_gl = run_global_ssl(args.user, args.fruit, args.scenario, root)
+    df_gs, auc_gs_m, auc_gs_s = run_global_supervised(args.fruit, args.scenario, args.user, root)
+    df_ps, auc_ps_m, auc_ps_s = run_personal_ssl(args.user, args.fruit, args.scenario, root)
+    df_gl, auc_gl_m, auc_gl_s = run_global_ssl(args.user, args.fruit, args.scenario, root)
 
     # Summary
     summary = []
-    for name, df in [
-        ('global_supervised', df_gs),
-        ('personal_ssl', df_ps),
-        ('global_ssl', df_gl),
+    for name, (df, auc_m, auc_s) in [
+        ('global_supervised', (df_gs, auc_gs_m, auc_gs_s)),
+        ('global_ssl', (df_gl, auc_gl_m, auc_gl_s)),
+        ('personal_ssl', (df_ps, auc_ps_m, auc_ps_s))
     ]:
         best = df.loc[df['Accuracy_Mean'].idxmax()]
         summary.append({
             'Pipeline': name,
             'Threshold': best['Threshold'],
-            'Sensitivity': best['Sensitivity_Mean'],
-            'Specificity': best['Specificity_Mean'],
-            'Accuracy': best['Accuracy_Mean'],
+            'Accuracy_Mean': best['Accuracy_Mean'],
+            'Accuracy_STD': best['Accuracy_STD'],
+            'Sensitivity_Mean': best['Sensitivity_Mean'],
+            'Sensitivity_STD': best['Sensitivity_STD'],
+            'Specificity_Mean': best['Specificity_Mean'],
+            'Specificity_STD': best['Specificity_STD'],
+            'AUC_Mean': auc_m,
+            'AUC_Std': auc_s,
         })
     summary_df = pd.DataFrame(summary)
     summary_df.to_csv(root / 'comparison_summary.csv', index=False)
