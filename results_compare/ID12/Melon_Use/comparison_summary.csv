@@ -1,0 +1,4 @@
+Pipeline,Threshold,Sensitivity,Specificity,Accuracy
+global_supervised,0.0,1.0,0.0,0.9789428571428572
+personal_ssl,0.0,1.0,0.0,1.0
+global_ssl,0.0,1.0,0.0,1.0
