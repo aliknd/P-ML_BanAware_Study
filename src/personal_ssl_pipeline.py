@@ -25,7 +25,7 @@ from src.classifier_utils import (
 from src.signal_utils import (
     WINDOW_SIZE, STEP_SIZE, create_windows,
     apply_augmentations, create_projection_head,
-    build_simclr_encoder, train_simclr, plot_ssl_losses
+    build_simclr_encoder, train_simclr
 )
 from src.chart_utils import plot_thresholds, plot_ssl_losses
 
@@ -162,8 +162,10 @@ if __name__=="__main__":
             p_tr = clf.predict(Xtr, verbose=0)
             p_te = clf.predict(Xte, verbose=0)
             plot_thresholds(
-                ytr, p_tr, yte, p_te,
-                out, f"{uid} {fruit}_{scenario} (personal_ssl)"
+                yte,
+                p_te,
+                out,
+                f"{uid} {fruit}_{scenario} (personal_ssl)"
             )
 
             print(f"  ✓ classifier & threshold → {out}")
