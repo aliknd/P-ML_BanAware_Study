@@ -1,28 +1,20 @@
-#!/usr/bin/env python3
-"""
-chart_utils.py
-==============
-Shared helpers for:
-• boot‑strapped threshold‑metric estimation (mean ± SD)
-• threshold plots with error bars (test set only)
-• ROC curves (reports AUC on raw test set plus boot‑strap AUC mean ± SD)
-• SimCLR loss curves
-"""
 import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, roc_auc_score, roc_curve
 
+
 # --------------------------------------------------------------------------- #
 # Boot‑strap utilities
 # --------------------------------------------------------------------------- #
 def bootstrap_threshold_metrics(
-    y, probs,
+    y,
+    probs,
     thresholds: np.ndarray = np.arange(0.0, 1.01, 0.01),
-    sample_frac: float    = 0.7,
-    n_iters: int          = 1000,
-    rng_seed: int         = 42,
+    sample_frac: float     = 0.7,
+    n_iters: int           = 1000,
+    rng_seed: int          = 42,
 ) -> (pd.DataFrame, float, float):
     """
     Re‑sample ~sample_frac of the data (with replacement) n_iters times and
@@ -48,7 +40,8 @@ def bootstrap_threshold_metrics(
 
         for t in thresholds:
             preds = (p_samp >= t).astype(int)
-            tn, fp, fn, tp = confusion_matrix(y_samp, preds, labels=[0, 1]).ravel()
+            tn, fp, fn, tp = confusion_matrix(
+                y_samp, preds, labels=[0, 1]).ravel()
             sens = tp / (tp + fn) if (tp + fn) else 0.0
             spec = tn / (tn + fp) if (tn + fp) else 0.0
             acc  = (tp + tn) / len(y_samp)
@@ -71,6 +64,7 @@ def bootstrap_threshold_metrics(
     auc_mean = np.nanmean(aucs)
     auc_std  = np.nanstd(aucs,  ddof=1)
     return pd.DataFrame(rows), auc_mean, auc_std
+
 
 # --------------------------------------------------------------------------- #
 # Plotting helpers
@@ -100,7 +94,8 @@ def plot_thresholds(
 
     # thresholds that meet publication‑quality criteria
     mask = (df_te["Sensitivity_Mean"] > 0.9) & (df_te["Specificity_Mean"] > 0.5)
-    df_te[mask].to_csv(os.path.join(out_dir, "passing_thresholds.csv"), index=False)
+    df_te[mask].to_csv(os.path.join(out_dir, "passing_thresholds.csv"),
+                       index=False)
 
     # -------- threshold curve with error bars (test only) --------
     plt.figure(figsize=(8, 5))
@@ -123,21 +118,26 @@ def plot_thresholds(
     plt.close()
 
     # -------- ROC curve (raw test set) + boot‑strap AUC stats --------
-    fpr, tpr, _ = roc_curve(y_test, p_test)
-    raw_auc     = roc_auc_score(y_test, p_test)
-    plt.figure(figsize=(6, 6))
-    plt.plot(fpr, tpr, label=f"Raw AUC = {raw_auc:.3f}")
-    plt.plot([0, 1], [0, 1], "--", color="grey")
-    plt.title(f"ROC – {title}\nBoot AUC = {auc_te_m:.3f} ± {auc_te_s:.3f}")
-    plt.xlabel("False Positive Rate")
-    plt.ylabel("True Positive Rate")
-    plt.legend(loc="lower right")
-    plt.tight_layout()
-    plt.savefig(os.path.join(out_dir, "roc_curve.png"))
-    plt.close()
+    if len(np.unique(y_test)) == 2:
+        fpr, tpr, _ = roc_curve(y_test, p_test)
+        raw_auc     = roc_auc_score(y_test, p_test)
+        plt.figure(figsize=(6, 6))
+        plt.plot(fpr, tpr, label=f"Raw AUC = {raw_auc:.3f}")
+        plt.plot([0, 1], [0, 1], "--", color="grey")
+        plt.title(f"ROC – {title}\nBoot AUC = {auc_te_m:.3f} ± {auc_te_s:.3f}")
+        plt.xlabel("False Positive Rate")
+        plt.ylabel("True Positive Rate")
+        plt.legend(loc="lower right")
+        plt.tight_layout()
+        plt.savefig(os.path.join(out_dir, "roc_curve.png"))
+        plt.close()
+    else:
+        print(f"[plot_thresholds] ROC skipped – only one class in test set "
+              f"for {title}")
+
 
 # --------------------------------------------------------------------------- #
-# SSL loss curves (unchanged interface)
+# SSL loss curves
 # --------------------------------------------------------------------------- #
 def plot_ssl_losses(train_losses, val_losses, out_dir, encoder_name="encoder"):
     os.makedirs(out_dir, exist_ok=True)

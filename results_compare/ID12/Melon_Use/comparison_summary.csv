@@ -1,4 +1,0 @@
-Pipeline,Threshold,Accuracy_Mean,Accuracy_STD,Sensitivity_Mean,Sensitivity_STD,Specificity_Mean,Specificity_STD,AUC_Mean,AUC_Std
-global_supervised,0.0,0.9789428571428572,0.023465224038738013,1.0,0.0,0.0,0.0,0.7558404904661589,0.075797125739064
-global_ssl,0.0,1.0,0.0,1.0,0.0,0.0,0.0,,
-personal_ssl,0.0,1.0,0.0,1.0,0.0,0.0,0.0,,
