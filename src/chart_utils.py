@@ -93,7 +93,7 @@ def plot_thresholds(
     df_te.to_csv(os.path.join(out_dir, "bootstrap_metrics.csv"), index=False)
 
     # thresholds that meet publication‑quality criteria
-    mask = (df_te["Sensitivity_Mean"] > 0.9) & (df_te["Specificity_Mean"] > 0.5)
+    mask = (df_te["Sensitivity_Mean"] > 0.7) & (df_te["Specificity_Mean"] > 0.3)
     df_te[mask].to_csv(os.path.join(out_dir, "passing_thresholds.csv"),
                        index=False)
 

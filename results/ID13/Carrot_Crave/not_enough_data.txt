@@ -1,8 +1,0 @@
-SKIPPED – Not enough windows for benchmarking.
-
-Train days (2): [datetime.date(2023, 12, 14), datetime.date(2023, 12, 16)]
-Test  days (1): [datetime.date(2023, 12, 20)]
-Train windows: 1
-Test  windows: 2
-
-Minimum required: 2 train windows AND 2 test windows.

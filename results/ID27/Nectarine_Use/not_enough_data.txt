@@ -1,8 +1,0 @@
-SKIPPED – Not enough windows for benchmarking.
-
-Train days (28): [datetime.date(2024, 3, 20), datetime.date(2024, 3, 21), datetime.date(2024, 3, 22), datetime.date(2024, 3, 23), datetime.date(2024, 3, 24), datetime.date(2024, 3, 25), datetime.date(2024, 3, 28), datetime.date(2024, 3, 29), datetime.date(2024, 3, 30), datetime.date(2024, 3, 31), datetime.date(2024, 4, 1), datetime.date(2024, 4, 2), datetime.date(2024, 4, 3), datetime.date(2024, 4, 4), datetime.date(2024, 4, 5), datetime.date(2024, 4, 6), datetime.date(2024, 4, 7), datetime.date(2024, 4, 9), datetime.date(2024, 4, 10), datetime.date(2024, 4, 11), datetime.date(2024, 4, 12), datetime.date(2024, 4, 13), datetime.date(2024, 4, 14), datetime.date(2024, 4, 15), datetime.date(2024, 4, 16), datetime.date(2024, 4, 17), datetime.date(2024, 4, 18), datetime.date(2024, 4, 19)]
-Test  days (9): [datetime.date(2024, 4, 20), datetime.date(2024, 4, 22), datetime.date(2024, 4, 23), datetime.date(2024, 4, 24), datetime.date(2024, 4, 25), datetime.date(2024, 4, 27), datetime.date(2024, 4, 28), datetime.date(2024, 4, 29), datetime.date(2024, 4, 30)]
-Train windows: 81
-Test  windows: 0
-
-Minimum required: 2 train windows AND 2 test windows.

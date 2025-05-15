@@ -1,0 +1,7 @@
+Pipeline: personal_ssl
+
+User ID18 TRAIN days: [datetime.date(2024, 1, 18), datetime.date(2024, 1, 19), datetime.date(2024, 1, 20), datetime.date(2024, 1, 21), datetime.date(2024, 1, 22), datetime.date(2024, 1, 25), datetime.date(2024, 1, 26), datetime.date(2024, 1, 27), datetime.date(2024, 1, 30), datetime.date(2024, 1, 31), datetime.date(2024, 2, 1), datetime.date(2024, 2, 3), datetime.date(2024, 2, 5), datetime.date(2024, 2, 8), datetime.date(2024, 2, 9), datetime.date(2024, 2, 11), datetime.date(2024, 2, 12), datetime.date(2024, 2, 13), datetime.date(2024, 2, 14), datetime.date(2024, 2, 15)]
+   windows=38  (+=17, -=21)
+
+User ID18 TEST  days: [datetime.date(2024, 1, 23), datetime.date(2024, 1, 24), datetime.date(2024, 1, 28), datetime.date(2024, 1, 29), datetime.date(2024, 2, 4), datetime.date(2024, 2, 7), datetime.date(2024, 2, 10), datetime.date(2024, 2, 16)]
+   windows=15  (+=12, -=3)
