@@ -1,7 +1,7 @@
 Pipeline: personal_ssl
 
-User ID12 TRAIN days: [datetime.date(2023, 12, 2), datetime.date(2023, 12, 3), datetime.date(2023, 12, 4), datetime.date(2023, 12, 5), datetime.date(2023, 12, 8), datetime.date(2023, 12, 11), datetime.date(2023, 12, 12), datetime.date(2023, 12, 16), datetime.date(2023, 12, 17), datetime.date(2023, 12, 19), datetime.date(2023, 12, 20), datetime.date(2023, 12, 23), datetime.date(2023, 12, 26), datetime.date(2023, 12, 27), datetime.date(2023, 12, 28), datetime.date(2023, 12, 31)]
-   windows=21  (+=12, -=9)
+User ID12 TRAIN days: [datetime.date(2023, 12, 4), datetime.date(2023, 12, 5), datetime.date(2023, 12, 6), datetime.date(2023, 12, 7), datetime.date(2023, 12, 8), datetime.date(2023, 12, 11), datetime.date(2023, 12, 13), datetime.date(2023, 12, 16), datetime.date(2023, 12, 17), datetime.date(2023, 12, 19), datetime.date(2023, 12, 20), datetime.date(2023, 12, 22), datetime.date(2023, 12, 26), datetime.date(2023, 12, 28), datetime.date(2023, 12, 29), datetime.date(2023, 12, 31)]
+   windows=21  (+=14, -=7)
 
-User ID12 TEST  days: [datetime.date(2023, 12, 6), datetime.date(2023, 12, 7), datetime.date(2023, 12, 13), datetime.date(2023, 12, 22), datetime.date(2023, 12, 29)]
-   windows=7  (+=5, -=2)
+User ID12 TEST  days: [datetime.date(2023, 12, 2), datetime.date(2023, 12, 27), datetime.date(2023, 12, 23), datetime.date(2023, 12, 3), datetime.date(2023, 12, 12)]
+   windows=7  (+=3, -=4)
