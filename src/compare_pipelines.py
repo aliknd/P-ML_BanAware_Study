@@ -140,60 +140,92 @@ def _train_test_days_by_samples(pos_df, neg_df, hr_df, st_df):
 # ─── New day‐split helper: 60/20/20 stratified days ────────────────────────
 from sklearn.model_selection import train_test_split
 
-MIN_TEST_WINDOWS = 2
+# ─── Hyperparameters ──────────────────────────────────────────────────────
+MIN_TEST_WINDOWS      = 2       # your existing guard
+MIN_SAMPLES_PER_CLASS = 1       # new: require ≥1 pos & ≥1 neg in TEST
 
-MIN_TEST_WINDOWS = 2
+def undersample_negatives(X, y, random_state=42):
+    """
+    If negatives >> positives, down-sample negatives to match #positives.
+    Returns balanced (X, y).
+    """
+    # indices of each class
+    pos_idx = np.where(y == 1)[0]
+    neg_idx = np.where(y == 0)[0]
+    n_pos   = len(pos_idx)
+
+    # only undersample if negatives exceed
+    if len(neg_idx) > n_pos > 0:
+        rng = np.random.default_rng(random_state)
+        neg_idx = rng.choice(neg_idx, size=n_pos, replace=False)
+
+    keep = np.concatenate([pos_idx, neg_idx])
+    # shuffle so model sees mixed examples
+    rng = np.random.default_rng(random_state)
+    rng.shuffle(keep)
+
+    return X[keep], y[keep]
 
 def ensure_train_val_test_days(pos_df, neg_df, hr_df, st_df):
     """
-    1) Split off 20% of days as TEST (no stratification).
-    2) From the remaining 80%, stratify into 75/25 → TRAIN (60%) / VAL (20%).
-    3) Enforce a minimum number of test windows.
+    1) Split off ~20% of days as TEST (no strat).
+    2) From remaining ~80%, stratify into 75/25 → TRAIN (~60%) / VAL (~20%).
+    3) Retry until TEST has ≥MIN_TEST_WINDOWS total windows AND
+       at least MIN_SAMPLES_PER_CLASS positives AND negatives.
     """
-    # 1) list all days & count windows per day
     days = np.array(sorted(
         pd.concat([pos_df, neg_df])['hawaii_createdat_time']
           .dt.date.unique()
     ))
-    counts = np.array([
-        _count_windows(
-            pos_df[pos_df['hawaii_createdat_time'].dt.date == d],
-            neg_df[neg_df['hawaii_createdat_time'].dt.date == d],
-            hr_df, st_df,
-            [d]
-        )
-        for d in days
-    ])
 
-    # 2) carve off 20% test days (no stratify)
-    trval_days, test_days = train_test_split(
-        days,
-        test_size=0.2,
-        random_state=42
+    # Precompute window counts per day for stratification
+    day_counts = {d: _count_windows(pos_df, neg_df, hr_df, st_df, [d])
+                  for d in days}
+
+    for attempt in range(10):
+        # 1) carve off TEST
+        trval_days, test_days = train_test_split(
+            days, test_size=0.2, random_state=42 + attempt
+        )
+        # check total windows
+        n_test = sum(day_counts[d] for d in test_days)
+        if n_test < MIN_TEST_WINDOWS:
+            continue
+
+        # check per-class windows in TEST
+        df_te   = collect_windows(pos_df, neg_df, hr_df, st_df, test_days)
+        pos_te  = df_te['state_val'].sum()
+        neg_te  = len(df_te) - pos_te
+        if pos_te < MIN_SAMPLES_PER_CLASS or neg_te < MIN_SAMPLES_PER_CLASS:
+            continue
+
+        # 2) stratify TRAIN/VAL on remaining days
+        trval_counts = [day_counts[d] for d in trval_days]
+        try:
+            train_days, val_days = train_test_split(
+                trval_days,
+                test_size=0.25,               # 0.25 of the 80% → 20% overall
+                stratify=trval_counts,
+                random_state=42 + attempt
+            )
+        except ValueError:
+            train_days, val_days = train_test_split(
+                trval_days,
+                test_size=0.25,
+                random_state=42 + attempt
+            )
+
+        # final sanity check: VAL must have at least MIN_TEST_WINDOWS as well
+        n_val = sum(day_counts[d] for d in val_days)
+        if n_val < MIN_TEST_WINDOWS:
+            continue
+
+        return np.array(train_days), np.array(val_days), np.array(test_days)
+
+    raise RuntimeError(
+        f"Unable to find a TEST split with ≥{MIN_TEST_WINDOWS} windows "
+        f"and ≥{MIN_SAMPLES_PER_CLASS} positives & negatives after 10 tries"
     )
-
-    # 3) ensure test set has enough windows
-    n_test = _count_windows(pos_df, neg_df, hr_df, st_df, test_days)
-    if n_test < MIN_TEST_WINDOWS:
-        raise RuntimeError(f"Only {n_test} test windows (<{MIN_TEST_WINDOWS})")
-
-    # 4) split remaining 80% into TRAIN/VAL with stratification
-    counts_trval = counts[np.isin(days, trval_days)]
-    try:
-        train_days, val_days = train_test_split(
-            trval_days,
-            test_size=0.25,               # 0.25 of the 80% → 20% overall
-            stratify=counts_trval,
-            random_state=42
-        )
-    except ValueError:
-        train_days, val_days = train_test_split(
-            trval_days,
-            test_size=0.25,
-            random_state=42
-        )
-
-    return np.array(train_days), np.array(val_days), np.array(test_days)
 
 def collect_windows(df_p, df_n, hr_df, st_df, days):
     p = df_p[df_p['hawaii_createdat_time'].dt.date.isin(days)]
