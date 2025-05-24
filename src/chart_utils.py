@@ -2,6 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from pathlib import Path
 from sklearn.metrics import confusion_matrix, roc_auc_score, roc_curve
 
 
@@ -151,4 +152,17 @@ def plot_ssl_losses(train_losses, val_losses, out_dir, encoder_name="encoder"):
     plt.legend()
     plt.tight_layout()
     plt.savefig(os.path.join(out_dir, f"{encoder_name}_ssl_loss.png"))
+    plt.close()
+
+# ─── Plot helpers ─────────────────────────────────────────────────────────
+def plot_clf_losses(train, val, out_dir, fname):
+    out_dir = Path(out_dir); out_dir.mkdir(parents=True, exist_ok=True)
+    plt.figure(figsize=(8, 4))
+    plt.plot(train, label="Train")
+    plt.plot(val,   label="Val")
+    plt.xlabel("Epoch"); plt.ylabel("Binary CE")
+    plt.title(fname.replace('_', ' ').title())
+    plt.grid(True); plt.legend()
+    plt.tight_layout()
+    plt.savefig(out_dir / f"{fname}.png")
     plt.close()

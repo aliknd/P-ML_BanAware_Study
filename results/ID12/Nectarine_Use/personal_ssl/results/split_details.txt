@@ -1,7 +1,13 @@
 Pipeline: personal_ssl
 
-User ID12 TRAIN days: [datetime.date(2023, 12, 3), datetime.date(2023, 12, 4), datetime.date(2023, 12, 6), datetime.date(2023, 12, 7), datetime.date(2023, 12, 11), datetime.date(2023, 12, 16), datetime.date(2023, 12, 17), datetime.date(2023, 12, 20), datetime.date(2023, 12, 27), datetime.date(2023, 12, 30), datetime.date(2023, 12, 31)]
-   windows=14  (+=6, -=8)
+=== TRAINING DAYS (used for model fitting) ===
+User ID12 TRAIN days: [datetime.date(2023, 12, 16), datetime.date(2023, 12, 20), datetime.date(2023, 12, 11), datetime.date(2023, 12, 27), datetime.date(2023, 12, 3), datetime.date(2023, 12, 17), datetime.date(2023, 12, 4), datetime.date(2023, 12, 7)]
+   windows=13  (+=6, -=7)
 
-User ID12 TEST  days: [datetime.date(2023, 12, 23), datetime.date(2023, 12, 28), datetime.date(2023, 12, 2)]
+=== VALIDATION DAYS (only target user; used for threshold selection) ===
+User ID12   VAL days: [datetime.date(2023, 12, 31), datetime.date(2023, 12, 30), datetime.date(2023, 12, 6)]
+   windows=1  (+=0, -=1)
+
+=== TEST DAYS (only target user; final evaluation) ===
+User ID12  TEST days: [datetime.date(2023, 12, 23), datetime.date(2023, 12, 28), datetime.date(2023, 12, 2)]
    windows=6  (+=3, -=3)

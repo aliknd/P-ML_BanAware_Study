@@ -20,16 +20,29 @@ os.makedirs(RESULTS_DIR, exist_ok=True)
 
 ALLOWED_SCENARIOS = {
     'ID5':  [('Melon', 'Crave')],
-    'ID10': [('Nectarine','Use'), ('Carrot','Use'),
-             ('Carrot','Crave'), ('Nectarine','Crave')],
-    'ID12': [('Melon','Use'), ('Nectarine','Use'),
-             ('Melon','Crave'), ('Nectarine','Crave')],
-    'ID13': [('Nectarine','Use'), ('Carrot','Crave')],
+    'ID9':  [('Melon', 'Crave')],
+    'ID10': [('Carrot','Crave'), ('Nectarine','Crave'),
+             ('Nectarine','Use'), ('Carrot','Use')],
+    'ID11': [('Carrot','Crave'), ('Nectarine','Crave'), ('Almond','Crave'),
+             ('Carrot','Use'), ('Nectarine','Use'), ('Almond','Use')],
+    'ID12': [('Melon','Crave'), ('Nectarine','Crave'),
+             ('Melon','Use'), ('Nectarine','Use'), ('GHB','Use')],
+    'ID13': [('Nectarine','Use'), ('Carrot','Use'), ('Almond','Use')],
+    'ID14': [('Carrot','Crave'), ('Carrot','Use')],
+    'ID15': [('Carrot','Crave'), ('Carrot','Use')],
     'ID18': [('Carrot','Use'), ('Carrot','Crave')],
-    'ID19': [('Melon','Use'), ('Melon','Crave')],
-    'ID25': [('Almond','Use')],
+    'ID19': [('Melon','Crave'), ('Almond','Crave'),
+             ('Melon','Use'), ('Almond','Use')],
+    'ID20': [('Melon','Use'), ('Nectarine','Use'),
+             ('Melon','Crave'), ('Nectarine','Crave')],
+    'ID21': [('Nectarine','Use'),
+             ('Melon','Crave'), ('Nectarine','Crave')],
+    'ID25': [('Almond','Crave'), ('Carrot', 'Crave'), 
+             ('Almond','Use')],
+    'ID26': [('Carrot','Use')],
     'ID27': [('Melon','Use'), ('Nectarine','Use'),
-             ('Melon','Crave'), ('Nectarine','Crave')]
+             ('Melon','Crave'), ('Nectarine','Crave')],
+    'ID28': [('Coffee','Use'), ('Almond','Use')]      
 }
 
 WINDOW_HOURS   = 1            # before/after event
@@ -87,12 +100,26 @@ def load_label_data(user_dir, fruit, scenario):
     uid   = os.path.basename(user_dir)
     fname = f"{uid}_{scenario}.csv"
     path  = os.path.join(user_dir, fname)
+
+    # 1) file doesn’t exist → empty DF
     if not os.path.exists(path):
         return pd.DataFrame()
-    df = pd.read_csv(path)
+
+    # 2) file is literally zero bytes → empty DF
+    if os.path.getsize(path) == 0:
+        return pd.DataFrame()
+
+    # 3) catch “no columns” error
+    try:
+        df = pd.read_csv(path)
+    except pd.errors.EmptyDataError:
+        return pd.DataFrame()
+
+    # 4) got a DF with columns but no rows → empty DF
     if df.empty:
         return pd.DataFrame()
 
+    # now parse your timestamp column
     if scenario == 'Use':
         raw = df['hawaii_use_time'].astype(str).str.split('.', n=1).str[0]
     else:
@@ -105,6 +132,7 @@ def load_label_data(user_dir, fruit, scenario):
 
     df = df.dropna(subset=['hawaii_createdat_time'])
 
+    # if you’re filtering by fruit
     if scenario != 'None':
         df = df[df['substance_fruit_label'] == fruit]
 

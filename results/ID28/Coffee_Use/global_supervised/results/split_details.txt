@@ -1,0 +1,13 @@
+Pipeline: global_supervised
+
+=== TRAINING DAYS (used for model fitting) ===
+User ID28 TRAIN days: [datetime.date(2024, 5, 27), datetime.date(2024, 5, 16), datetime.date(2024, 5, 21), datetime.date(2024, 5, 25), datetime.date(2024, 5, 18), datetime.date(2024, 5, 19), datetime.date(2024, 5, 30), datetime.date(2024, 5, 23), datetime.date(2024, 5, 15), datetime.date(2024, 5, 4), datetime.date(2024, 5, 7), datetime.date(2024, 5, 31), datetime.date(2024, 6, 7), datetime.date(2024, 5, 17), datetime.date(2024, 6, 9), datetime.date(2024, 5, 9), datetime.date(2024, 5, 26), datetime.date(2024, 5, 10)]
+   windows=30  (+=14, -=16)
+
+=== VALIDATION DAYS (only target user; used for threshold selection) ===
+User ID28   VAL days: [datetime.date(2024, 5, 24), datetime.date(2024, 6, 5), datetime.date(2024, 5, 8), datetime.date(2024, 5, 5), datetime.date(2024, 5, 6), datetime.date(2024, 5, 3)]
+   windows=9  (+=3, -=6)
+
+=== TEST DAYS (only target user; final evaluation) ===
+User ID28  TEST days: [datetime.date(2024, 6, 6), datetime.date(2024, 5, 20), datetime.date(2024, 5, 28), datetime.date(2024, 5, 22), datetime.date(2024, 5, 11), datetime.date(2024, 5, 14), datetime.date(2024, 6, 8)]
+   windows=7  (+=3, -=4)

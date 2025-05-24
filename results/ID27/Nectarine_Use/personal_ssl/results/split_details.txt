@@ -1,7 +1,13 @@
 Pipeline: personal_ssl
 
-User ID27 TRAIN days: [datetime.date(2024, 3, 20), datetime.date(2024, 3, 21), datetime.date(2024, 3, 22), datetime.date(2024, 3, 23), datetime.date(2024, 3, 24), datetime.date(2024, 3, 25), datetime.date(2024, 3, 28), datetime.date(2024, 3, 29), datetime.date(2024, 3, 30), datetime.date(2024, 3, 31), datetime.date(2024, 4, 2), datetime.date(2024, 4, 3), datetime.date(2024, 4, 6), datetime.date(2024, 4, 7), datetime.date(2024, 4, 10), datetime.date(2024, 4, 11), datetime.date(2024, 4, 12), datetime.date(2024, 4, 13), datetime.date(2024, 4, 15), datetime.date(2024, 4, 16), datetime.date(2024, 4, 17), datetime.date(2024, 4, 18), datetime.date(2024, 4, 20), datetime.date(2024, 4, 22), datetime.date(2024, 4, 23), datetime.date(2024, 4, 27), datetime.date(2024, 4, 28), datetime.date(2024, 4, 29)]
-   windows=80  (+=63, -=17)
+=== TRAINING DAYS (used for model fitting) ===
+User ID27 TRAIN days: [datetime.date(2024, 3, 25), datetime.date(2024, 4, 30), datetime.date(2024, 4, 2), datetime.date(2024, 4, 10), datetime.date(2024, 4, 20), datetime.date(2024, 3, 31), datetime.date(2024, 4, 23), datetime.date(2024, 4, 22), datetime.date(2024, 3, 26), datetime.date(2024, 4, 14), datetime.date(2024, 4, 7), datetime.date(2024, 3, 29), datetime.date(2024, 4, 25), datetime.date(2024, 4, 9), datetime.date(2024, 4, 12), datetime.date(2024, 4, 19), datetime.date(2024, 4, 29), datetime.date(2024, 3, 23), datetime.date(2024, 3, 28), datetime.date(2024, 3, 20), datetime.date(2024, 3, 21), datetime.date(2024, 3, 27), datetime.date(2024, 4, 27), datetime.date(2024, 4, 24)]
+   windows=114  (+=48, -=66)
 
-User ID27 TEST  days: [datetime.date(2024, 4, 30), datetime.date(2024, 4, 5), datetime.date(2024, 4, 19), datetime.date(2024, 4, 24), datetime.date(2024, 4, 9), datetime.date(2024, 4, 25), datetime.date(2024, 4, 14), datetime.date(2024, 4, 4)]
-   windows=27  (+=18, -=9)
+=== VALIDATION DAYS (only target user; used for threshold selection) ===
+User ID27   VAL days: [datetime.date(2024, 4, 3), datetime.date(2024, 4, 18), datetime.date(2024, 3, 30), datetime.date(2024, 3, 22), datetime.date(2024, 4, 6), datetime.date(2024, 4, 13), datetime.date(2024, 4, 17), datetime.date(2024, 4, 11)]
+   windows=51  (+=15, -=36)
+
+=== TEST DAYS (only target user; final evaluation) ===
+User ID27  TEST days: [datetime.date(2024, 4, 8), datetime.date(2024, 4, 5), datetime.date(2024, 4, 4), datetime.date(2024, 4, 15), datetime.date(2024, 3, 24), datetime.date(2024, 4, 1), datetime.date(2024, 4, 28), datetime.date(2024, 4, 16)]
+   windows=42  (+=18, -=24)
