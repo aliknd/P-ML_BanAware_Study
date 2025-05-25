@@ -9,6 +9,20 @@ Now:
   - One shared CNN per (fruit,scenario) saved under `global_cnns/...`
     (like encoders under `_global_encoders/...`).
   - Shared CNN and encoders get copied into each user’s folder.
+
+Optional class balancing (--sample-mode):
+  - Modes: original, undersample, oversample (default=original).
+  - Undersample: “round_robin_undersample” drops excess negatives
+    across users in a round‐robin fashion until total_neg == total_pos.
+  - Oversample: “round_robin_oversample” duplicates positive windows
+    (with small Gaussian jitter on their hr_seq/st_seq) in turn
+    until total_pos == total_neg.
+  - All original vs. new counts (per‐user and global) plus number of
+    added/removed samples are logged in each pipeline’s split_details.txt:
+      – Global pipelines show a “GLOBAL …” summary and per‐user breakdown.
+      – Personal‐SSL appends a “POST-SAMPLING SUMMARY” block.
+  - To use: pass `--sample-mode undersample` or `--sample-mode oversample`
+    when invoking the script; omit or use `original` to leave data untouched.
 """
 
 import argparse, warnings, os, shutil, sys, random
@@ -144,27 +158,176 @@ from sklearn.model_selection import train_test_split
 MIN_TEST_WINDOWS      = 2       # your existing guard
 MIN_SAMPLES_PER_CLASS = 1       # new: require ≥1 pos & ≥1 neg in TEST
 
+import numpy as np
+import pandas as pd
+
 def undersample_negatives(X, y, random_state=42):
     """
-    If negatives >> positives, down-sample negatives to match #positives.
-    Returns balanced (X, y).
+    Down-sample negatives to match positives.
+    Returns (X_balanced, y_balanced).
     """
-    # indices of each class
     pos_idx = np.where(y == 1)[0]
     neg_idx = np.where(y == 0)[0]
     n_pos   = len(pos_idx)
-
-    # only undersample if negatives exceed
-    if len(neg_idx) > n_pos > 0:
-        rng = np.random.default_rng(random_state)
-        neg_idx = rng.choice(neg_idx, size=n_pos, replace=False)
-
-    keep = np.concatenate([pos_idx, neg_idx])
-    # shuffle so model sees mixed examples
+    if n_pos == 0 or len(neg_idx) <= n_pos:
+        return X, y
     rng = np.random.default_rng(random_state)
+    neg_keep = rng.choice(neg_idx, size=n_pos, replace=False)
+    keep = np.concatenate([pos_idx, neg_keep])
     rng.shuffle(keep)
-
     return X[keep], y[keep]
+
+def oversample_positives(X, y, random_state=42, noise_scale=0.05):
+    """
+    Up-sample positives with Gaussian jitter to match negatives.
+    Returns (X_balanced, y_balanced, n_added).
+    """
+    pos_idx = np.where(y == 1)[0]
+    neg_idx = np.where(y == 0)[0]
+    n_pos   = len(pos_idx)
+    n_neg   = len(neg_idx)
+    if n_pos == 0 or n_pos >= n_neg:
+        return X, y, 0
+
+    rng      = np.random.default_rng(random_state)
+    picks    = rng.choice(pos_idx, size=(n_neg - n_pos), replace=True)
+    X_pos    = X[picks]
+    std_dev  = X_pos.std(axis=0, ddof=1)
+    noise    = rng.normal(0, std_dev * noise_scale, size=X_pos.shape)
+    X_new    = X_pos + noise
+    y_new    = np.ones(len(X_new), dtype=y.dtype)
+
+    Xb = np.vstack([X, X_new])
+    yb = np.concatenate([y, y_new])
+    return Xb, yb, len(X_new)
+
+def round_robin_undersample(train_info, random_state=42):
+    # train_info[u] is a dict {'days':…, 'df': DataFrame}
+    total_pos = sum(int(info["df"]["state_val"].sum()) for info in train_info.values())
+    total_neg = sum(int((info["df"]["state_val"]==0).sum()) for info in train_info.values())
+    to_remove = total_neg - total_pos
+    if to_remove <= 0:
+        return
+    rng   = np.random.default_rng(random_state)
+    users = list(train_info.keys())
+    removed = 0
+    idx = 0
+    while removed < to_remove and users:
+        u = users[idx % len(users)]
+        df = train_info[u]["df"]
+        negs = df.index[df["state_val"] == 0].tolist()
+        if not negs:
+            users.remove(u)
+        else:
+            drop = rng.choice(negs)
+            train_info[u]["df"] = df.drop(drop).reset_index(drop=True)
+            removed += 1
+        idx += 1
+
+def round_robin_oversample(train_info, random_state=42, noise_scale=0.05):
+    """
+    Evenly add synthetic positives across users until pos == neg globally.
+    Modifies train_info[u]["df"] in place.
+    Returns total added.
+    """
+    rng = np.random.default_rng(random_state)
+
+    # 1) Compute how many to add
+    total_pos = sum(int(info["df"]["state_val"].sum()) for info in train_info.values())
+    total_neg = sum(int((info["df"]["state_val"] == 0).sum()) for info in train_info.values())
+    to_add = total_neg - total_pos
+    if to_add <= 0:
+        return 0
+
+    # Helper to ensure seq → 1D float array
+    def _flatten_to_float(seq):
+        return np.asarray(seq, dtype=float)
+
+    users = list(train_info.keys())
+    added = 0
+    idx = 0
+
+    # 2) Round-robin over users
+    while added < to_add and users:
+        u = users[idx % len(users)]
+        df = train_info[u]["df"]
+
+        # pick by positional index
+        pos_idx = np.flatnonzero(df["state_val"].values == 1)
+        if pos_idx.size == 0:
+            users.remove(u)
+        else:
+            # sample one positive
+            pick = rng.choice(pos_idx)
+            row = df.iloc[pick].copy()  # always a Series
+
+            # flatten and jitter
+            hr = _flatten_to_float(row["hr_seq"])
+            st = _flatten_to_float(row["st_seq"])
+            hr_std, st_std = hr.std(ddof=1), st.std(ddof=1)
+            hr += rng.normal(0, hr_std * noise_scale, size=hr.shape)
+            st += rng.normal(0, st_std * noise_scale, size=st.shape)
+
+            # write back
+            row["hr_seq"] = hr.tolist()
+            row["st_seq"] = st.tolist()
+
+            # append the synthetic row
+            train_info[u]["df"] = pd.concat([df, row.to_frame().T], ignore_index=True)
+            added += 1
+
+        idx += 1
+
+    return added
+
+def sample_train_info(train_info, mode, random_state=42):
+    """
+    Apply sampling to train_info and return:
+      {
+        "global": {orig_pos, orig_neg, new_pos, new_neg, added, removed},
+        "per_user": {
+           uid: {orig_pos, orig_neg, new_pos, new_neg}, ...
+        }
+      }
+    """
+    # capture originals
+    per_user = {}
+    for u, info in train_info.items():
+        df = info["df"]
+        per_user[u] = {
+            "orig_pos": int(df["state_val"].sum()),
+            "orig_neg": int((df["state_val"]==0).sum())
+        }
+    g = per_user  # alias
+
+    orig_pos = sum(u["orig_pos"] for u in g.values())
+    orig_neg = sum(u["orig_neg"] for u in g.values())
+
+    added = removed = 0
+    if mode == "undersample":
+        round_robin_undersample(train_info, random_state)
+    elif mode == "oversample":
+        added = round_robin_oversample(train_info, random_state)
+    # recompute per-user new
+    for u, info in train_info.items():
+        df = info["df"]
+        per_user[u].update({
+            "new_pos": int(df["state_val"].sum()),
+            "new_neg": int((df["state_val"]==0).sum())
+        })
+
+    new_pos = sum(u["new_pos"] for u in per_user.values())
+    new_neg = sum(u["new_neg"] for u in per_user.values())
+    removed = orig_neg - new_neg
+
+    return {
+        "global": {
+          "orig_pos": orig_pos, "orig_neg": orig_neg,
+          "new_pos":  new_pos,  "new_neg":  new_neg,
+          "added":    added,    "removed": removed
+        },
+        "per_user": per_user
+    }
 
 def ensure_train_val_test_days(pos_df, neg_df, hr_df, st_df):
     """
@@ -255,64 +418,61 @@ def _write_skip_file(root: Path, train_days, test_days, n_tr, n_te):
     print(">> SKIPPED – see not_enough_data.txt for details")
 
 
-def write_split_details(results_dir, pipeline, train_info, val_info, test_info):
+def write_split_details(
+    results_dir, pipeline, train_info, val_info, test_info,
+    sample_mode="original", sample_summary=None
+):
     """
-    Write a split_details.txt with three clear sections:
-
-      1) Training days: all users whose data were used to fit the model
-      2) Validation days: only the target user, used for threshold selection
-      3) Test days: only the target user, held out for final evaluation
-
-    Parameters
-    ----------
-    results_dir : str or Path
-        Directory to write split_details.txt into.
-    pipeline : str
-        Name of the pipeline (e.g. "global_supervised").
-    train_info : dict[user] -> {"days": list of dates, "df": DataFrame of windows}
-        Per‐user train splits.
-    val_info : dict[user] -> {"days": list of dates, "df": DataFrame of windows}
-        Per‐user validation splits.
-    test_info : tuple (user, test_days_list, test_df)
-        The target user’s test split.
+    Writes split_details.txt with sampling mode, global & per-user stats,
+    then the TRAIN/VAL/TEST breakdown.
     """
-    results_dir = Path(results_dir)
-    results_dir.mkdir(parents=True, exist_ok=True)
-
+    results_dir = Path(results_dir); results_dir.mkdir(parents=True, exist_ok=True)
     uid, te_days, df_te = test_info
-    df_val = val_info[uid]["df"]
-    val_days = val_info[uid]["days"]
+    df_val = val_info[uid]["df"]; val_days = val_info[uid]["days"]
 
-    # Count positives/negatives
-    def counts(df):
-        pos = int(df["state_val"].sum())
-        neg = len(df) - pos
-        return pos, neg
+    # helper
+    def cnt(df):
+        p = int(df["state_val"].sum())
+        n = len(df)-p
+        return p, n
 
-    pos_te, neg_te = counts(df_te)
-    pos_va, neg_va = counts(df_val)
+    with open(results_dir/"split_details.txt","w") as f:
+        f.write(f"Pipeline: {pipeline}\n")
+        f.write(f"Sampling mode: {sample_mode}\n")
+        if sample_summary:
+            G = sample_summary["global"]
+            f.write(
+              f"GLOBAL  ORIG +{G['orig_pos']}/-{G['orig_neg']}  "
+              f"→ USED +{G['new_pos']}/-{G['new_neg']}\n"
+            )
+            if G["added"]:   f.write(f"Synthetic positives added: {G['added']}\n")
+            if G["removed"]: f.write(f"Negatives removed: {G['removed']}\n")
+            f.write("\nUSER-LEVEL SAMPLING:\n")
+            for u, stats in sample_summary["per_user"].items():
+                f.write(
+                  f"  {u}: ORIG +{stats['orig_pos']}/-{stats['orig_neg']}  "
+                  f"→ USED +{stats['new_pos']}/-{stats['new_neg']}\n"
+                )
+            f.write("\n")
 
-    with open(results_dir / "split_details.txt", "w") as f:
-        f.write(f"Pipeline: {pipeline}\n\n")
-
-        # ─── Section 1: Training days ───────────────────────────────────
+        # TRAIN
         f.write("=== TRAINING DAYS (used for model fitting) ===\n")
-        for user, info in train_info.items():
-            days = info["days"]
-            df   = info["df"]
-            pos, neg = counts(df)
-            f.write(f"User {user} TRAIN days: {days}\n")
-            f.write(f"   windows={len(df)}  (+={pos}, -={neg})\n\n")
+        for u, info in train_info.items():
+            p,n = cnt(info["df"])
+            f.write(f"User {u} TRAIN days: {info['days']}\n")
+            f.write(f"   windows={len(info['df'])}  (+={p}, -={n})\n\n")
 
-        # ─── Section 2: Validation days ────────────────────────────────
-        f.write("=== VALIDATION DAYS (only target user; used for threshold selection) ===\n")
-        f.write(f"User {uid}   VAL days: {val_days}\n")
-        f.write(f"   windows={len(df_val)}  (+={pos_va}, -={neg_va})\n\n")
+        # VAL
+        p_va,n_va = cnt(df_val)
+        f.write("=== VALIDATION DAYS (only target user) ===\n")
+        f.write(f"User {uid} VAL days: {val_days}\n")
+        f.write(f"   windows={len(df_val)}  (+={p_va}, -={n_va})\n\n")
 
-        # ─── Section 3: Test days ───────────────────────────────────────
-        f.write("=== TEST DAYS (only target user; final evaluation) ===\n")
-        f.write(f"User {uid}  TEST days: {te_days}\n")
-        f.write(f"   windows={len(df_te)}  (+={pos_te}, -={neg_te})\n")
+        # TEST
+        p_te,n_te = cnt(df_te)
+        f.write("=== TEST DAYS (only target user) ===\n")
+        f.write(f"User {uid} TEST days: {te_days}\n")
+        f.write(f"   windows={len(df_te)}  (+={p_te}, -={n_te})\n")
 
 # ─── Helper to train/load per-user SSL encoder ─────────────────────────────
 def _train_or_load_encoder(path, dtype, df, train_days, results_dir):
@@ -525,91 +685,117 @@ def ensure_global_supervised(shared_cnn_root, fruit, scenario, all_splits, uid):
     return m, sdir
 
 # ─── Pipeline #1: Global-Supervised (60/20/20 + explicit val) ─────────────
-def run_global_supervised(fruit, scenario, uid, user_root,
-                          all_splits, shared_cnn_root):
+def run_global_supervised(
+    fruit: str,
+    scenario: str,
+    uid: str,
+    user_root: Path,
+    all_splits: dict,
+    shared_cnn_root: Path,
+    sample_mode: str = "original"
+):
     """
-    1) Load (or train) the global CNN once using ensure_global_supervised
-       (which uses all users' train windows + only this user's VAL).
-    2) Copy the model & plots into the user's folder.
-    3) Build train/val/test splits and perform thresholding & bootstrapping.
+    Pipeline #1: Global-Supervised
+
+    1) Train or load a single CNN on ALL users' train-day windows,
+       validating only on this user's validation windows.
+    2) Optionally undersample or oversample TRAIN windows across users.
+    3) Copy the model & plots into the user's folder.
+    4) Build train/val/test splits, write split_details.txt with sampling info,
+       then threshold & bootstrap on TEST.
     """
     print(f"\n>> Global-Supervised ({fruit}_{scenario})")
-    out_dir   = Path(user_root) / 'global_supervised'
+
+    # Directories
+    out_dir   = user_root / 'global_supervised'
     models_d  = out_dir / 'models_saved'
     results_d = out_dir / 'results'
     models_d.mkdir(parents=True, exist_ok=True)
     results_d.mkdir(parents=True, exist_ok=True)
 
-    # 1) Train or load the global CNN (validating on this user's VAL only)
+    # 1) Train or load the shared CNN (validating on this user's VAL only)
     model, src_dir = ensure_global_supervised(
         shared_cnn_root, fruit, scenario, all_splits, uid
     )
-    for f in Path(src_dir).glob('*'):
-        if f.suffix in ('.keras',):
-            shutil.copy2(f, models_d / f.name)
-        elif f.suffix in ('.png',):
-            shutil.copy2(f, results_d / f.name)
+    # Copy model files and plots
+    for fpath in Path(src_dir).glob('*'):
+        if fpath.suffix == '.keras':
+            shutil.copy2(fpath, models_d / fpath.name)
+        elif fpath.suffix == '.png':
+            shutil.copy2(fpath, results_d / fpath.name)
 
-    # 2) Unpack the splits
-    tr_days_u, val_days_u, te_days_u = all_splits[uid]
-
-    # 3) Build train_info & val_info dictionaries
-    train_info, val_info = {}, {}
+    # 2) Build per-user train_info and val_info
+    train_info = {}
+    val_info   = {}
     for u, (tr_days, val_days, _) in all_splits.items():
-        hr_df, st_df = load_signal_data(Path(BASE_DATA_DIR) / u)
+        # load signals & labels
+        hr_df, st_df = load_signal_data(Path(BASE_DATA_DIR) / u)  # if separate loader
         pos_df = load_label_data(Path(BASE_DATA_DIR) / u, fruit, scenario)
         neg_df = load_label_data(Path(BASE_DATA_DIR) / u, fruit, 'None')
         if neg_df.empty or len(neg_df) < len(pos_df):
             neg_df = derive_negative_labels(hr_df, pos_df, len(pos_df))
 
+        # collect windows
         df_tr  = collect_windows(pos_df, neg_df, hr_df, st_df, tr_days)
         df_val = collect_windows(pos_df, neg_df, hr_df, st_df, val_days)
+
         train_info[u] = {"days": tr_days.tolist(),  "df": df_tr}
         val_info[u]   = {"days": val_days.tolist(), "df": df_val}
 
-    # 4) Prepare test windows for this user
-    hr_df, st_df = load_signal_data(Path(BASE_DATA_DIR) / uid)
-    pos_df       = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, scenario)
-    neg_df       = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, 'None')
-    if neg_df.empty or len(neg_df) < len(pos_df):
-        neg_df = derive_negative_labels(hr_df, pos_df, len(pos_df))
-    df_te = collect_windows(pos_df, neg_df, hr_df, st_df, te_days_u)
+    # 3) Apply sampling (original, undersample, or oversample)
+    sample_summary = sample_train_info(train_info, mode=sample_mode, random_state=42)
 
-    # 5) Log split details
-    write_split_details(results_d, "global_supervised", train_info, val_info,
-                        (uid, te_days_u.tolist(), df_te))
+    # 4) Prepare this user's TEST windows
+    tr_days_u, val_days_u, te_days_u = all_splits[uid]
+    hr_df_u, st_df_u = load_signal_data(Path(BASE_DATA_DIR) / uid)
+    pos_df_u = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, scenario)
+    neg_df_u = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, 'None')
+    if neg_df_u.empty or len(neg_df_u) < len(pos_df_u):
+        neg_df_u = derive_negative_labels(hr_df_u, pos_df_u, len(pos_df_u))
+    df_te = collect_windows(pos_df_u, neg_df_u, hr_df_u, st_df_u, te_days_u)
 
-    # 6) Build X/y arrays
+    # 5) Write split_details.txt (with sampling info and original vs used counts)
+    write_split_details(
+        results_d,
+        "global_supervised",
+        train_info,
+        val_info,
+        (uid, te_days_u.tolist(), df_te),
+        sample_mode=sample_mode,
+        sample_summary=sample_summary
+    )
+
+    # 6) Build X/y arrays for training, validation, and test
     def build_XY(df_list):
-        X = np.stack([np.vstack([h,s]).T for h,s in zip(df_list['hr_seq'], df_list['st_seq'])])
-        return X, df_list['state_val'].values
+        X = np.stack([np.vstack([h, s]).T
+                      for h, s in zip(df_list['hr_seq'], df_list['st_seq'])])
+        y = df_list['state_val'].values
+        return X, y
 
     X_tr, y_tr   = build_XY(pd.concat([v["df"] for v in train_info.values()]))
     X_val, y_val = build_XY(val_info[uid]["df"])
     X_te, y_te   = build_XY(df_te)
 
     # 7) Threshold selection on VAL & bootstrap on TEST
-    # Compute class weights
-    cw_vals      = compute_class_weight('balanced', classes=np.unique(y_tr), y=y_tr)
+    cw_vals = compute_class_weight('balanced', classes=np.unique(y_tr), y=y_tr)
     class_weight = {i: cw_vals[i] for i in range(len(cw_vals))}
 
-    # Pick threshold on VAL
     val_preds  = model.predict(X_val, verbose=0).flatten()
     thresholds = np.arange(0.0, 1.0001, 0.01)
     scores = []
     for thr in thresholds:
         pbin = (val_preds >= thr).astype(int)
-        tp = ((pbin==1)&(y_val==1)).sum()
-        fn = ((pbin==0)&(y_val==1)).sum()
-        fp = ((pbin==1)&(y_val==0)).sum()
-        tn = ((pbin==0)&(y_val==0)).sum()
-        tpr  = tp/(tp+fn) if tp+fn>0 else 0.0
-        spec = tn/(tn+fp) if tn+fp>0 else 0.0
-        scores.append(0.7*tpr + 0.3*spec)
-    best_threshold = float(thresholds[np.argmax(scores)])
-    (Path(results_d)/"selected_threshold.txt").write_text(f"{best_threshold:.4f}\n")
+        tp = ((pbin == 1) & (y_val == 1)).sum()
+        fn = ((pbin == 0) & (y_val == 1)).sum()
+        fp = ((pbin == 1) & (y_val == 0)).sum()
+        tn = ((pbin == 0) & (y_val == 0)).sum()
+        tpr  = tp / (tp + fn) if tp + fn > 0 else 0.0
+        spec = tn / (tn + fp) if tn + fp > 0 else 0.0
+        scores.append(0.7 * tpr + 0.3 * spec)
 
-    # Bootstrap on TEST
+    best_threshold = float(thresholds[np.argmax(scores)])
+    (results_d / "selected_threshold.txt").write_text(f"{best_threshold:.4f}\n")
+
     df_boot, auc_mean, auc_std = bootstrap_threshold_metrics(
         y_te,
         model.predict(X_te, verbose=0).flatten(),
@@ -618,7 +804,7 @@ def run_global_supervised(fruit, scenario, uid, user_root,
         n_iters=1000,
         rng_seed=42
     )
-    df_boot.to_csv(Path(results_d)/"bootstrap_metrics.csv", index=False)
+    df_boot.to_csv(results_d / "bootstrap_metrics.csv", index=False)
     plot_thresholds(
         y_te,
         model.predict(X_te, verbose=0).flatten(),
@@ -632,29 +818,48 @@ def run_global_supervised(fruit, scenario, uid, user_root,
     return df_boot, auc_mean, auc_std
 
 # ─── Pipeline #2: Personal-SSL (60/20/20 days + explicit val windows) ─────
-def run_personal_ssl(uid, fruit, scenario, user_root,
-                     tr_days_u, val_days_u, te_days_u):
+def run_personal_ssl(
+    uid: str,
+    fruit: str,
+    scenario: str,
+    user_root: Path,
+    tr_days_u: np.ndarray,
+    val_days_u: np.ndarray,
+    te_days_u: np.ndarray,
+    sample_mode: str = "original"
+):
+    """
+    Pipeline #2: Personal-SSL
+
+    1) Load this user's signals & labels.
+    2) Train (or load) SSL encoders on TRAIN days.
+    3) Window & label for TRAIN/VAL/TEST and write split_details.txt.
+    4) Encode into features, then optionally undersample/oversample.
+    5) Log post-sampling summary.
+    6) Train a small classifier, threshold & bootstrap on TEST.
+    """
     print(f"\n>> Personal-SSL ({fruit}_{scenario})")
+
     out_dir   = user_root / 'personal_ssl'
     models_d  = out_dir / 'models_saved'
     results_d = out_dir / 'results'
     models_d.mkdir(parents=True, exist_ok=True)
     results_d.mkdir(parents=True, exist_ok=True)
 
-    # 1) load signals & labels for this user
+    # 1) Load signals & labels
     hr_df, st_df = load_signal_data(Path(BASE_DATA_DIR) / uid)
-    pos_df       = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, scenario)
-    neg_df       = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, 'None')
+    pos_df = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, scenario)
+    neg_df = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, 'None')
     if neg_df.empty or len(neg_df) < len(pos_df):
         neg_df = derive_negative_labels(hr_df, pos_df, len(pos_df))
 
-    # 2) train or load SSL‐encoders on TRAIN days
+    # 2) Train or load SSL encoders
     enc_hr = _train_or_load_encoder(models_d / 'hr_encoder.keras',
                                     'hr', hr_df, tr_days_u, results_d)
     enc_st = _train_or_load_encoder(models_d / 'steps_encoder.keras',
                                     'steps', st_df, tr_days_u, results_d)
 
-    # 3) window & label for TRAIN/VAL/TEST
+    # 3) Window & label for TRAIN/VAL/TEST
     df_tr  = collect_windows(pos_df, neg_df, hr_df, st_df, tr_days_u)
     df_val = collect_windows(pos_df, neg_df, hr_df, st_df, val_days_u)
     df_te  = collect_windows(pos_df, neg_df, hr_df, st_df, te_days_u)
@@ -662,50 +867,61 @@ def run_personal_ssl(uid, fruit, scenario, user_root,
     write_split_details(
         results_d,
         "personal_ssl",
-        {uid: {"days": list(tr_days_u),  "df": df_tr }},
-        {uid: {"days": list(val_days_u), "df": df_val}},
-        (uid, list(te_days_u), df_te)
+        {uid: {"days": tr_days_u.tolist(),  "df": df_tr}},
+        {uid: {"days": val_days_u.tolist(), "df": df_val}},
+        (uid, te_days_u.tolist(), df_te),
+        sample_mode=sample_mode,
+        sample_summary=None
     )
 
-    # 4) encode all splits
+    # 4) Encode into feature vectors
     def encode(df):
         hr_seq = np.stack(df['hr_seq'])[..., None]
         st_seq = np.stack(df['st_seq'])[..., None]
-        return enc_hr.predict(hr_seq, verbose=0), \
-               enc_st.predict(st_seq, verbose=0)
+        return enc_hr.predict(hr_seq, verbose=0), enc_st.predict(st_seq, verbose=0)
 
-    H_tr, S_tr   = encode(df_tr)
+    H_tr,  S_tr  = encode(df_tr)
     H_val, S_val = encode(df_val)
-    H_te, S_te   = encode(df_te)
+    H_te,  S_te  = encode(df_te)
 
-    X_tr, y_tr = np.concatenate([H_tr,   S_tr], axis=1), df_tr['state_val'].values
-    X_val, y_val = np.concatenate([H_val,  S_val], axis=1), df_val['state_val'].values
-    X_te, y_te   = np.concatenate([H_te,   S_te], axis=1), df_te['state_val'].values
+    X_tr = np.concatenate([H_tr, S_tr], axis=1)
+    y_tr = df_tr['state_val'].values
+    X_val = np.concatenate([H_val, S_val], axis=1)
+    y_val = df_val['state_val'].values
+    X_te  = np.concatenate([H_te, S_te], axis=1)
+    y_te  = df_te['state_val'].values
 
-    # 5) build & compile classifier
+    # 5) Optional sampling on TRAIN & VAL
+    added = removed = 0
+    if sample_mode == "undersample":
+        X_tr, y_tr   = undersample_negatives(X_tr, y_tr, random_state=42)
+        # removed can be computed if needed
+    elif sample_mode == "oversample":
+        X_tr, y_tr, added = oversample_positives(X_tr, y_tr, random_state=42)
+
+    # Log post-sampling summary
+    with open(results_d / "split_details.txt", "a") as f:
+        f.write("=== POST-SAMPLING SUMMARY ===\n")
+        if sample_mode == "undersample":
+            f.write(f"Negatives removed (TRAIN/VAL): see diff above\n")
+        elif sample_mode == "oversample":
+            f.write(f"Synthetic positives added (TRAIN): {added}\n")
+        f.write("\n")
+
+    # 6) Build & train classifier
     clf = Sequential([
-        Dense(64, activation='relu',  input_shape=(X_tr.shape[1],),
-              kernel_regularizer=l2(0.01)),
+        Dense(64, activation='relu', input_shape=(X_tr.shape[1],), kernel_regularizer=l2(0.01)),
         BatchNormalization(), Dropout(0.5),
-        Dense(32, activation='relu',  kernel_regularizer=l2(0.01)),
+        Dense(32, activation='relu', kernel_regularizer=l2(0.01)),
         Dropout(0.5),
-        Dense(16, activation='relu',  kernel_regularizer=l2(0.01)),
+        Dense(16, activation='relu', kernel_regularizer=l2(0.01)),
         Dropout(0.5),
         Dense(1, activation='sigmoid')
     ])
-    clf.compile(optimizer=Adam(1e-3),
-                loss="binary_crossentropy",
-                metrics=["accuracy"])
+    clf.compile(optimizer=Adam(1e-3), loss='binary_crossentropy', metrics=['accuracy'])
 
-    # 6) train on TRAIN with explicit VAL
-    es = EarlyStopping(monitor='val_loss',
-                       patience=CLF_PATIENCE,
-                       restore_best_weights=True,
-                       verbose=1)
-
-    cw_vals      = compute_class_weight("balanced",
-                                        classes=np.unique(y_tr),
-                                        y=y_tr)
+    es = EarlyStopping(monitor='val_loss', patience=CLF_PATIENCE, restore_best_weights=True, verbose=1)
+    cw_vals = compute_class_weight("balanced", classes=np.unique(y_tr), y=y_tr)
     class_weight = {i: cw_vals[i] for i in range(len(cw_vals))}
 
     clf.fit(
@@ -718,23 +934,23 @@ def run_personal_ssl(uid, fruit, scenario, user_root,
         verbose=2
     )
 
-    # 7) pick threshold on VAL
+    # 7) Threshold & bootstrap on TEST
     val_preds  = clf.predict(X_val, verbose=0).flatten()
     thresholds = np.arange(0.0, 1.0001, 0.01)
     scores     = []
     for thr in thresholds:
         pbin = (val_preds >= thr).astype(int)
-        tp = ((pbin==1)&(y_val==1)).sum()
-        fn = ((pbin==0)&(y_val==1)).sum()
-        fp = ((pbin==1)&(y_val==0)).sum()
-        tn = ((pbin==0)&(y_val==0)).sum()
-        tpr  = tp/(tp+fn) if tp+fn>0 else 0.0
-        spec = tn/(tn+fp) if tn+fp>0 else 0.0
-        scores.append(0.7*tpr + 0.3*spec)
-    best_threshold = float(thresholds[np.argmax(scores)])
-    (results_d/"selected_threshold.txt").write_text(f"{best_threshold:.4f}\n")
+        tp = ((pbin == 1) & (y_val == 1)).sum()
+        fn = ((pbin == 0) & (y_val == 1)).sum()
+        fp = ((pbin == 1) & (y_val == 0)).sum()
+        tn = ((pbin == 0) & (y_val == 0)).sum()
+        tpr  = tp / (tp + fn) if tp + fn > 0 else 0.0
+        spec = tn / (tn + fp) if tn + fp > 0 else 0.0
+        scores.append(0.7 * tpr + 0.3 * spec)
 
-    # 8) final TEST bootstrap
+    best_threshold = float(thresholds[np.argmax(scores)])
+    (results_d / "selected_threshold.txt").write_text(f"{best_threshold:.4f}\n")
+
     df_boot, auc_mean, auc_std = bootstrap_threshold_metrics(
         y_te,
         clf.predict(X_te, verbose=0).flatten(),
@@ -743,8 +959,7 @@ def run_personal_ssl(uid, fruit, scenario, user_root,
         n_iters=1000,
         rng_seed=42
     )
-    df_boot.to_csv(results_d/"bootstrap_metrics.csv", index=False)
-
+    df_boot.to_csv(results_d / "bootstrap_metrics.csv", index=False)
     plot_thresholds(
         y_te,
         clf.predict(X_te, verbose=0).flatten(),
@@ -757,76 +972,108 @@ def run_personal_ssl(uid, fruit, scenario, user_root,
 
     return df_boot, auc_mean, auc_std
 
-def run_global_ssl(uid, fruit, scenario, user_root,
-                   shared_enc_root, all_splits):
+def run_global_ssl(
+    uid: str,
+    fruit: str,
+    scenario: str,
+    user_root: Path,
+    shared_enc_root: Path,
+    all_splits: dict,
+    sample_mode: str = "original"
+):
     """
-    1) Load (or train) shared SSL encoders on all users' train days.
-    2) Validate and test only on the target user's windows.
+    Pipeline #3: Global-SSL
+
+    1) Train or load shared SSL encoders on all users' train-day windows.
+    2) Optionally undersample or oversample those windows across users.
+    3) Validate and test only on this user's days.
     """
     print(f"\n>> Global-SSL ({fruit}_{scenario})")
-    out_dir   = Path(user_root) / 'global_ssl'
+
+    out_dir   = user_root / 'global_ssl'
     models_d  = out_dir / 'models_saved'
     results_d = out_dir / 'results'
     models_d.mkdir(parents=True, exist_ok=True)
     results_d.mkdir(parents=True, exist_ok=True)
 
-    # 1) Load or train SSL encoders
+    # 1) Load or train shared encoders
     enc_hr, enc_st, enc_src = _ensure_global_encoders(
         shared_enc_root, fruit, scenario, all_splits
     )
-    for f in Path(enc_src).glob('*'):
-        if f.suffix == '.keras':
-            shutil.copy2(f, models_d / f.name)
-        elif f.suffix == '.png':
-            shutil.copy2(f, results_d / f.name)
+    for fpath in Path(enc_src).glob('*'):
+        if fpath.suffix == '.keras':
+            shutil.copy2(fpath, models_d / fpath.name)
+        elif fpath.suffix == '.png':
+            shutil.copy2(fpath, results_d / fpath.name)
 
-    # 2) Unpack this user's split
-    tr_days_u, val_days_u, te_days_u = all_splits[uid]
-
-    # 3) Build train_info & val_info
-    train_info, val_info = {}, {}
+    # 2) Build per-user train_info and val_info
+    train_info = {}
+    val_info   = {}
     for u, (tr_days, val_days, _) in all_splits.items():
         hr_df, st_df = load_signal_data(Path(BASE_DATA_DIR) / u)
-        pos_df       = load_label_data(Path(BASE_DATA_DIR) / u, fruit, scenario)
-        neg_df       = load_label_data(Path(BASE_DATA_DIR) / u, fruit, 'None')
+        pos_df = load_label_data(Path(BASE_DATA_DIR) / u, fruit, scenario)
+        neg_df = load_label_data(Path(BASE_DATA_DIR) / u, fruit, 'None')
         if neg_df.empty or len(neg_df) < len(pos_df):
             neg_df = derive_negative_labels(hr_df, pos_df, len(pos_df))
 
         df_tr  = collect_windows(pos_df, neg_df, hr_df, st_df, tr_days)
         df_val = collect_windows(pos_df, neg_df, hr_df, st_df, val_days)
+
         train_info[u] = {"days": tr_days.tolist(),  "df": df_tr}
         val_info[u]   = {"days": val_days.tolist(), "df": df_val}
 
-    # 4) This user's TEST windows
-    hr_df, st_df = load_signal_data(Path(BASE_DATA_DIR) / uid)
-    pos_df       = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, scenario)
-    neg_df       = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, 'None')
-    if neg_df.empty or len(neg_df) < len(pos_df):
-        neg_df = derive_negative_labels(hr_df, pos_df, len(pos_df))
-    df_te = collect_windows(pos_df, neg_df, hr_df, st_df, te_days_u)
+    # 3) Apply sampling across users
+    sample_summary = sample_train_info(train_info, mode=sample_mode, random_state=42)
 
-    # 5) Log split details
-    write_split_details(results_d, "global_ssl", train_info, val_info,
-                        (uid, te_days_u.tolist(), df_te))
+    # 4) Build this user's test windows
+    tr_days_u, val_days_u, te_days_u = all_splits[uid]
+    hr_df_u, st_df_u = load_signal_data(Path(BASE_DATA_DIR) / uid)
+    pos_df_u = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, scenario)
+    neg_df_u = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, 'None')
+    if neg_df_u.empty or len(neg_df_u) < len(pos_df_u):
+        neg_df_u = derive_negative_labels(hr_df_u, pos_df_u, len(pos_df_u))
+    df_te = collect_windows(pos_df_u, neg_df_u, hr_df_u, st_df_u, te_days_u)
 
-    # 6) Encode sequences
+    # 5) Write split_details.txt with sampling info
+    write_split_details(
+        results_d,
+        "global_ssl",
+        train_info,
+        val_info,
+        (uid, te_days_u.tolist(), df_te),
+        sample_mode=sample_mode,
+        sample_summary=sample_summary
+    )
+
+    # 6) Encode and build X/y
     def encode(df):
         hr_seq = np.stack(df['hr_seq'])[..., None]
         st_seq = np.stack(df['st_seq'])[..., None]
         return enc_hr.predict(hr_seq, verbose=0), enc_st.predict(st_seq, verbose=0)
 
-    H_tr, S_tr = encode(pd.concat([v["df"] for v in train_info.values()]))
-    df_val_u   = val_info[uid]["df"]
+    H_tr,  S_tr  = encode(pd.concat([v["df"] for v in train_info.values()]))
+    df_val_u      = val_info[uid]["df"]
     H_val, S_val = encode(df_val_u)
-    H_te, S_te = encode(df_te)
+    H_te,  S_te  = encode(df_te)
 
-    X_tr, y_tr = np.concatenate([H_tr, S_tr], axis=1), pd.concat([v["df"] for v in train_info.values()])['state_val'].values
-    X_val, y_val = np.concatenate([H_val, S_val], axis=1), df_val_u['state_val'].values
-    X_te, y_te   = np.concatenate([H_te, S_te], axis=1), df_te['state_val'].values
+    X_tr = np.concatenate([H_tr, S_tr], axis=1)
+    y_tr = pd.concat([v["df"] for v in train_info.values()])['state_val'].values
+    X_val = np.concatenate([H_val, S_val], axis=1)
+    y_val = df_val_u['state_val'].values
+    X_te  = np.concatenate([H_te, S_te], axis=1)
+    y_te  = df_te['state_val'].values
 
-    # 7) Build & train classifier
+    # ─── **NEW**: ensure everything is float32 ───────────────────────────────
+    X_tr  = X_tr.astype('float32')
+    y_tr  = y_tr.astype('float32')
+    X_val = X_val.astype('float32')
+    y_val = y_val.astype('float32')
+    X_te  = X_te.astype('float32')
+    y_te  = y_te.astype('float32')
+
+    # 7) Train classifier and threshold/bootstrap
     clf = Sequential([
-        Dense(64, activation='relu',  input_shape=(X_tr.shape[1],), kernel_regularizer=l2(0.01)),
+        Dense(64, activation='relu', input_shape=(X_tr.shape[1],), kernel_regularizer=l2(0.01)),
         BatchNormalization(), Dropout(0.5),
         Dense(32, activation='relu', kernel_regularizer=l2(0.01)),
         Dropout(0.5),
@@ -850,23 +1097,23 @@ def run_global_ssl(uid, fruit, scenario, user_root,
         verbose=2
     )
 
-    # 8) Threshold selection on VAL
+    # 8) Evaluate on TEST
     val_preds  = clf.predict(X_val, verbose=0).flatten()
     thresholds = np.arange(0.0, 1.0001, 0.01)
     scores     = []
     for thr in thresholds:
         pbin = (val_preds >= thr).astype(int)
-        tp = ((pbin==1)&(y_val==1)).sum()
-        fn = ((pbin==0)&(y_val==1)).sum()
-        fp = ((pbin==1)&(y_val==0)).sum()
-        tn = ((pbin==0)&(y_val==0)).sum()
-        tpr  = tp/(tp+fn) if (tp+fn)>0 else 0.0
-        spec = tn/(tn+fp) if (tn+fp)>0 else 0.0
-        scores.append(0.7*tpr + 0.3*spec)
-    best_threshold = float(thresholds[np.argmax(scores)])
-    (Path(results_d)/"selected_threshold.txt").write_text(f"{best_threshold:.4f}\n")
+        tp = ((pbin == 1) & (y_val == 1)).sum()
+        fn = ((pbin == 0) & (y_val == 1)).sum()
+        fp = ((pbin == 1) & (y_val == 0)).sum()
+        tn = ((pbin == 0) & (y_val == 0)).sum()
+        tpr  = tp / (tp + fn) if tp + fn > 0 else 0.0
+        spec = tn / (tn + fp) if tn + fp > 0 else 0.0
+        scores.append(0.7 * tpr + 0.3 * spec)
 
-    # 9) Final TEST‐time bootstrap & ROC
+    best_threshold = float(thresholds[np.argmax(scores)])
+    (results_d / "selected_threshold.txt").write_text(f"{best_threshold:.4f}\n")
+
     df_boot, auc_mean, auc_std = bootstrap_threshold_metrics(
         y_te,
         clf.predict(X_te, verbose=0).flatten(),
@@ -875,7 +1122,7 @@ def run_global_ssl(uid, fruit, scenario, user_root,
         n_iters=1000,
         rng_seed=42
     )
-    df_boot.to_csv(Path(results_d)/"bootstrap_metrics.csv", index=False)
+    df_boot.to_csv(results_d / "bootstrap_metrics.csv", index=False)
     plot_thresholds(
         y_te,
         clf.predict(X_te, verbose=0).flatten(),
@@ -888,39 +1135,53 @@ def run_global_ssl(uid, fruit, scenario, user_root,
 
     return df_boot, auc_mean, auc_std
 
-# ─── Main ────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
+    import warnings
     warnings.filterwarnings("ignore")
 
-    # ─── Parse arguments ────────────────────────────────────────────────────
     pa = argparse.ArgumentParser()
-    pa.add_argument("--user",      required=True)
-    pa.add_argument("--fruit",     required=True)
-    pa.add_argument("--scenario",  required=True)
+    pa.add_argument("--user",       required=True)
+    pa.add_argument("--fruit",      required=True)
+    pa.add_argument("--scenario",   required=True)
     pa.add_argument("--output-dir", default="results")
+    pa.add_argument(
+        "--sample-mode",
+        choices=["original", "undersample", "oversample"],
+        default="original",
+        help="How to balance classes in TRAIN/VAL: keep original, undersample negs, or oversample pos."
+    )
+    pa.add_argument(
+        "--results-subdir",
+        default="results",
+        help="Name of the subdirectory under each pipeline where results (CSVs, plots, split_details) go."
+    )
     args = pa.parse_args()
 
-    # ─── Prepare output directories ─────────────────────────────────────────
+    # override the global default
+    global RESULTS_SUBDIR
+    RESULTS_SUBDIR = args.results_subdir
+
+    # prepare top‐level and per‐user directories
     top_out         = Path(args.output_dir)
     user_root       = top_out / args.user / f"{args.fruit}_{args.scenario}"
     shared_enc_root = top_out / "_global_encoders"
     shared_cnn_root = top_out / "global_cnns"
     user_root.mkdir(parents=True, exist_ok=True)
 
-    # ─── Seed everything ─────────────────────────────────────────────────────
+    # seed everything
     random.seed(42)
     np.random.seed(42)
     tf.random.set_seed(42)
 
-    # ─── Build day‐level splits for all users ───────────────────────────────
+    # build day‐level splits for all users
     all_splits = {}
     for u, pairs in ALLOWED_SCENARIOS.items():
         if (args.fruit, args.scenario) not in pairs:
             continue
 
         hr_df, st_df = load_signal_data(Path(BASE_DATA_DIR) / u)
-        pos_df       = load_label_data(Path(BASE_DATA_DIR) / u, args.fruit, args.scenario)
-        neg_df       = load_label_data(Path(BASE_DATA_DIR) / u, args.fruit, "None")
+        pos_df = load_label_data(Path(BASE_DATA_DIR) / u, args.fruit, args.scenario)
+        neg_df = load_label_data(Path(BASE_DATA_DIR) / u, args.fruit, "None")
         if neg_df.empty or len(neg_df) < len(pos_df):
             neg_df = derive_negative_labels(hr_df, pos_df, len(pos_df))
 
@@ -932,44 +1193,42 @@ if __name__ == "__main__":
 
         all_splits[u] = (tr_u, val_u, te_u)
 
-    # ─── Ensure target user has splits ──────────────────────────────────────
+    # ensure the target user has splits
     if args.user not in all_splits:
         print(f"Skipping user {args.user}: no data for {args.fruit}/{args.scenario}.")
         sys.exit(0)
     tr_days_u, val_days_u, te_days_u = all_splits[args.user]
 
-    # ─── Tiny‐data guard (train/test) ───────────────────────────────────────
+    # tiny‐data guard
     hr_df_u, st_df_u = load_signal_data(Path(BASE_DATA_DIR) / args.user)
     pos_u = load_label_data(Path(BASE_DATA_DIR) / args.user, args.fruit, args.scenario)
     neg_u = load_label_data(Path(BASE_DATA_DIR) / args.user, args.fruit, "None")
     if neg_u.empty or len(neg_u) < len(pos_u):
         neg_u = derive_negative_labels(hr_df_u, pos_u, len(pos_u))
-
     n_tr = _count_windows(pos_u, neg_u, hr_df_u, st_df_u, tr_days_u)
     n_te = _count_windows(pos_u, neg_u, hr_df_u, st_df_u, te_days_u)
     if n_tr < 2 or n_te < 2:
         _write_skip_file(user_root, tr_days_u, te_days_u, n_tr, n_te)
         sys.exit(0)
 
-    # ─── Run Global-Supervised ──────────────────────────────────────────────
+    # run pipelines
     df_gs, auc_gs_m, auc_gs_s = run_global_supervised(
-        args.fruit, args.scenario, args.user, user_root,
-        all_splits, shared_cnn_root
+        args.fruit, args.scenario, args.user,
+        user_root, all_splits, shared_cnn_root,
+        sample_mode=args.sample_mode
     )
-
-    # ─── Run Personal-SSL ──────────────────────────────────────────────────
     df_ps, auc_ps_m, auc_ps_s = run_personal_ssl(
-        args.user, args.fruit, args.scenario, user_root,
-        tr_days_u, val_days_u, te_days_u
+        args.user, args.fruit, args.scenario,
+        user_root, tr_days_u, val_days_u, te_days_u,
+        sample_mode=args.sample_mode
     )
-
-    # ─── Run Global-SSL ────────────────────────────────────────────────────
     df_gl, auc_gl_m, auc_gl_s = run_global_ssl(
-        args.user, args.fruit, args.scenario, user_root,
-        shared_enc_root, all_splits
+        args.user, args.fruit, args.scenario,
+        user_root, shared_enc_root, all_splits,
+        sample_mode=args.sample_mode
     )
 
-    # ─── Comparison Summary ────────────────────────────────────────────────
+    # produce comparison summary
     rows = []
     for name, (df, auc_m, auc_s) in [
         ("global_supervised", (df_gs, auc_gs_m, auc_gs_s)),
@@ -983,17 +1242,18 @@ if __name__ == "__main__":
             ascending=[False, False]
         ).iloc[0]
         rows.append({
-            "Pipeline":          name,
-            "Best_Threshold":    best["Threshold"],
-            "Accuracy_Mean":     best["Accuracy_Mean"],
-            "Accuracy_STD":      best["Accuracy_STD"],
-            "Sensitivity_Mean":  best["Sensitivity_Mean"],
-            "Sensitivity_STD":   best["Sensitivity_STD"],
-            "Specificity_Mean":  best["Specificity_Mean"],
-            "Specificity_STD":   best["Specificity_STD"],
-            "AUC_Mean":          auc_m,
-            "AUC_STD":           auc_s
+            "Pipeline":         name,
+            "Best_Threshold":   best["Threshold"],
+            "Accuracy_Mean":    best["Accuracy_Mean"],
+            "Accuracy_STD":     best["Accuracy_STD"],
+            "Sensitivity_Mean": best["Sensitivity_Mean"],
+            "Sensitivity_STD":  best["Sensitivity_STD"],
+            "Specificity_Mean": best["Specificity_Mean"],
+            "Specificity_STD":  best["Specificity_STD"],
+            "AUC_Mean":         auc_m,
+            "AUC_STD":          auc_s
         })
+
     df_summary = pd.DataFrame(rows)
     df_summary.to_csv(user_root / "comparison_summary.csv", index=False)
 

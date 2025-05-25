@@ -1,0 +1,15 @@
+Pipeline: personal_ssl
+Sampling mode: original
+=== TRAINING DAYS (used for model fitting) ===
+User ID11 TRAIN days: [datetime.date(2023, 12, 16), datetime.date(2023, 12, 1), datetime.date(2023, 12, 4), datetime.date(2023, 12, 19), datetime.date(2023, 12, 15), datetime.date(2023, 12, 2)]
+   windows=4  (+=2, -=2)
+
+=== VALIDATION DAYS (only target user) ===
+User ID11 VAL days: [datetime.date(2023, 12, 12), datetime.date(2023, 12, 10)]
+   windows=3  (+=1, -=2)
+
+=== TEST DAYS (only target user) ===
+User ID11 TEST days: [datetime.date(2023, 12, 5), datetime.date(2023, 12, 20)]
+   windows=3  (+=1, -=2)
+=== POST-SAMPLING SUMMARY ===
+

@@ -1,0 +1,26 @@
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +10/-85  → USED +10/-85
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +2/-3  → USED +2/-3
+  ID19: ORIG +6/-23  → USED +6/-23
+  ID25: ORIG +2/-59  → USED +2/-59
+
+=== TRAINING DAYS (used for model fitting) ===
+User ID11 TRAIN days: [datetime.date(2023, 12, 19), datetime.date(2023, 12, 5), datetime.date(2023, 12, 16), datetime.date(2023, 12, 2)]
+   windows=5  (+=2, -=3)
+
+User ID19 TRAIN days: [datetime.date(2024, 1, 31), datetime.date(2024, 2, 6), datetime.date(2024, 2, 13), datetime.date(2024, 2, 12), datetime.date(2024, 2, 20), datetime.date(2024, 2, 8), datetime.date(2024, 2, 14), datetime.date(2024, 1, 28), datetime.date(2024, 1, 25), datetime.date(2024, 2, 16), datetime.date(2024, 1, 24), datetime.date(2024, 1, 26), datetime.date(2024, 1, 30), datetime.date(2024, 2, 3), datetime.date(2024, 1, 27), datetime.date(2024, 1, 29), datetime.date(2024, 2, 10)]
+   windows=29  (+=6, -=23)
+
+User ID25 TRAIN days: [datetime.date(2024, 4, 10), datetime.date(2024, 3, 19), datetime.date(2024, 3, 8), datetime.date(2024, 3, 13), datetime.date(2024, 3, 12), datetime.date(2024, 3, 24), datetime.date(2024, 4, 3), datetime.date(2024, 3, 30), datetime.date(2024, 4, 8), datetime.date(2024, 3, 15), datetime.date(2024, 3, 17), datetime.date(2024, 3, 11), datetime.date(2024, 3, 14), datetime.date(2024, 4, 9), datetime.date(2024, 3, 27), datetime.date(2024, 3, 23), datetime.date(2024, 3, 10), datetime.date(2024, 3, 28), datetime.date(2024, 3, 29), datetime.date(2024, 4, 7), datetime.date(2024, 3, 31)]
+   windows=61  (+=2, -=59)
+
+=== VALIDATION DAYS (only target user) ===
+User ID11 VAL days: [datetime.date(2023, 12, 12), datetime.date(2023, 12, 8)]
+   windows=3  (+=1, -=2)
+
+=== TEST DAYS (only target user) ===
+User ID11 TEST days: [datetime.date(2023, 12, 10), datetime.date(2023, 12, 20)]
+   windows=3  (+=2, -=1)

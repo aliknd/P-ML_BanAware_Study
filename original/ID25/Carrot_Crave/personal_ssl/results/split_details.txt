@@ -1,0 +1,15 @@
+Pipeline: personal_ssl
+Sampling mode: original
+=== TRAINING DAYS (used for model fitting) ===
+User ID25 TRAIN days: [datetime.date(2024, 3, 29), datetime.date(2024, 3, 19), datetime.date(2024, 4, 7), datetime.date(2024, 3, 20), datetime.date(2024, 4, 1), datetime.date(2024, 3, 26), datetime.date(2024, 3, 9), datetime.date(2024, 3, 25), datetime.date(2024, 4, 9), datetime.date(2024, 4, 2), datetime.date(2024, 3, 8), datetime.date(2024, 3, 11), datetime.date(2024, 3, 30), datetime.date(2024, 4, 8), datetime.date(2024, 3, 27), datetime.date(2024, 3, 22), datetime.date(2024, 4, 3), datetime.date(2024, 3, 10), datetime.date(2024, 3, 18), datetime.date(2024, 4, 10)]
+   windows=51  (+=4, -=47)
+
+=== VALIDATION DAYS (only target user) ===
+User ID25 VAL days: [datetime.date(2024, 4, 5), datetime.date(2024, 4, 4), datetime.date(2024, 3, 23), datetime.date(2024, 3, 24), datetime.date(2024, 4, 6), datetime.date(2024, 3, 12), datetime.date(2024, 3, 13)]
+   windows=19  (+=0, -=19)
+
+=== TEST DAYS (only target user) ===
+User ID25 TEST days: [datetime.date(2024, 3, 28), datetime.date(2024, 3, 21), datetime.date(2024, 3, 16), datetime.date(2024, 3, 31), datetime.date(2024, 3, 14), datetime.date(2024, 3, 15), datetime.date(2024, 3, 17)]
+   windows=26  (+=1, -=25)
+=== POST-SAMPLING SUMMARY ===
+
