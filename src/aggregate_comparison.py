@@ -73,6 +73,7 @@ def main(root_dir, out_file):
                          "Threshold", "Sensitivity", "Specificity",
                          "Accuracy", "ROC AUC"]]
     combined.set_index(["ID", "Substance", "Task", "Pipeline"], inplace=True)
+    combined.sort_index(level=["ID", "Pipeline"], inplace=True)
 
     combined.to_csv(out_file)
     print(f"Aggregated {len(combined)} rows to {out_file}")
