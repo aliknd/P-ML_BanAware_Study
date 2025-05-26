@@ -2,14 +2,14 @@ Pipeline: personal_ssl
 Sampling mode: original
 === TRAINING DAYS (used for model fitting) ===
 User ID18 TRAIN days: [datetime.date(2024, 1, 21), datetime.date(2024, 2, 11), datetime.date(2024, 2, 1), datetime.date(2024, 2, 3), datetime.date(2024, 1, 30), datetime.date(2024, 2, 12), datetime.date(2024, 2, 13), datetime.date(2024, 1, 18), datetime.date(2024, 1, 22), datetime.date(2024, 2, 6), datetime.date(2024, 2, 16), datetime.date(2024, 1, 28), datetime.date(2024, 1, 24), datetime.date(2024, 1, 31), datetime.date(2024, 1, 19), datetime.date(2024, 2, 8), datetime.date(2024, 1, 25), datetime.date(2024, 1, 23)]
-   windows=47  (+=20, -=27)
+   windows=48  (+=20, -=28)
 
 === VALIDATION DAYS (only target user) ===
 User ID18 VAL days: [datetime.date(2024, 1, 29), datetime.date(2024, 2, 5), datetime.date(2024, 2, 15), datetime.date(2024, 2, 7), datetime.date(2024, 1, 20), datetime.date(2024, 2, 9)]
-   windows=12  (+=9, -=3)
+   windows=14  (+=9, -=5)
 
 === TEST DAYS (only target user) ===
 User ID18 TEST days: [datetime.date(2024, 2, 14), datetime.date(2024, 2, 2), datetime.date(2024, 2, 10), datetime.date(2024, 2, 4), datetime.date(2024, 1, 26), datetime.date(2024, 1, 27)]
-   windows=16  (+=8, -=8)
+   windows=13  (+=8, -=5)
 === POST-SAMPLING SUMMARY ===
 

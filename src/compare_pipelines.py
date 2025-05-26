@@ -591,9 +591,12 @@ def ensure_global_supervised(shared_cnn_root, fruit, scenario, all_splits, uid):
 
         hr_df, st_df = load_signal_data(Path(BASE_DATA_DIR) / u)
         pos_df = load_label_data(Path(BASE_DATA_DIR) / u, fruit, scenario)
-        neg_df = load_label_data(Path(BASE_DATA_DIR) / u, fruit, 'None')
-        if neg_df.empty or len(neg_df) < len(pos_df):
-            neg_df = derive_negative_labels(hr_df, pos_df, len(pos_df))
+        orig_neg = load_label_data(Path(BASE_DATA_DIR) / u, fruit, 'None')
+        if len(orig_neg) < len(pos_df):
+            extra = derive_negative_labels(hr_df, pos_df, len(pos_df) - len(orig_neg))
+            neg_df = pd.concat([orig_neg, extra], ignore_index=True)
+        else:
+            neg_df = orig_neg
 
         df_u = collect_windows(pos_df, neg_df, hr_df, st_df, tr_days_u)
         for h_seq, s_seq, label in zip(df_u['hr_seq'], df_u['st_seq'], df_u['state_val']):
@@ -692,7 +695,8 @@ def run_global_supervised(
     user_root: Path,
     all_splits: dict,
     shared_cnn_root: Path,
-    sample_mode: str = "original"
+    neg_df_u: pd.DataFrame,        # ← NEW argument
+    sample_mode: str = "original",
 ):
     """
     Pipeline #1: Global-Supervised
@@ -728,14 +732,15 @@ def run_global_supervised(
     train_info = {}
     val_info   = {}
     for u, (tr_days, val_days, _) in all_splits.items():
-        # load signals & labels
-        hr_df, st_df = load_signal_data(Path(BASE_DATA_DIR) / u)  # if separate loader
+        hr_df, st_df = load_signal_data(Path(BASE_DATA_DIR) / u)
         pos_df = load_label_data(Path(BASE_DATA_DIR) / u, fruit, scenario)
-        neg_df = load_label_data(Path(BASE_DATA_DIR) / u, fruit, 'None')
-        if neg_df.empty or len(neg_df) < len(pos_df):
-            neg_df = derive_negative_labels(hr_df, pos_df, len(pos_df))
+        orig_neg = load_label_data(Path(BASE_DATA_DIR) / u, fruit, 'None')
+        if len(orig_neg) < len(pos_df):
+            extra = derive_negative_labels(hr_df, pos_df, len(pos_df) - len(orig_neg))
+            neg_df = pd.concat([orig_neg, extra], ignore_index=True)
+        else:
+            neg_df = orig_neg
 
-        # collect windows
         df_tr  = collect_windows(pos_df, neg_df, hr_df, st_df, tr_days)
         df_val = collect_windows(pos_df, neg_df, hr_df, st_df, val_days)
 
@@ -749,9 +754,8 @@ def run_global_supervised(
     tr_days_u, val_days_u, te_days_u = all_splits[uid]
     hr_df_u, st_df_u = load_signal_data(Path(BASE_DATA_DIR) / uid)
     pos_df_u = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, scenario)
-    neg_df_u = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, 'None')
-    if neg_df_u.empty or len(neg_df_u) < len(pos_df_u):
-        neg_df_u = derive_negative_labels(hr_df_u, pos_df_u, len(pos_df_u))
+
+    # <— use the precomputed neg_df_u, do NOT call derive_negative_labels here
     df_te = collect_windows(pos_df_u, neg_df_u, hr_df_u, st_df_u, te_days_u)
 
     # 5) Write split_details.txt (with sampling info and original vs used counts)
@@ -826,6 +830,7 @@ def run_personal_ssl(
     tr_days_u: np.ndarray,
     val_days_u: np.ndarray,
     te_days_u: np.ndarray,
+    neg_df_u: pd.DataFrame,        # ← NEW argument
     sample_mode: str = "original"
 ):
     """
@@ -848,10 +853,10 @@ def run_personal_ssl(
 
     # 1) Load signals & labels
     hr_df, st_df = load_signal_data(Path(BASE_DATA_DIR) / uid)
-    pos_df = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, scenario)
-    neg_df = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, 'None')
-    if neg_df.empty or len(neg_df) < len(pos_df):
-        neg_df = derive_negative_labels(hr_df, pos_df, len(pos_df))
+    pos_df       = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, scenario)
+
+    # <— use the precomputed neg_df_u, do NOT call derive_negative_labels here
+    neg_df = neg_df_u
 
     # 2) Train or load SSL encoders
     enc_hr = _train_or_load_encoder(models_d / 'hr_encoder.keras',
@@ -972,6 +977,7 @@ def run_personal_ssl(
 
     return df_boot, auc_mean, auc_std
 
+# ─── Pipeline #3: Global-SSL ───────────────────────────────────────────────
 def run_global_ssl(
     uid: str,
     fruit: str,
@@ -979,6 +985,7 @@ def run_global_ssl(
     user_root: Path,
     shared_enc_root: Path,
     all_splits: dict,
+    neg_df_u: pd.DataFrame,        # ← NEW argument
     sample_mode: str = "original"
 ):
     """
@@ -1012,9 +1019,12 @@ def run_global_ssl(
     for u, (tr_days, val_days, _) in all_splits.items():
         hr_df, st_df = load_signal_data(Path(BASE_DATA_DIR) / u)
         pos_df = load_label_data(Path(BASE_DATA_DIR) / u, fruit, scenario)
-        neg_df = load_label_data(Path(BASE_DATA_DIR) / u, fruit, 'None')
-        if neg_df.empty or len(neg_df) < len(pos_df):
-            neg_df = derive_negative_labels(hr_df, pos_df, len(pos_df))
+        orig_neg = load_label_data(Path(BASE_DATA_DIR) / u, fruit, 'None')
+        if len(orig_neg) < len(pos_df):
+            extra = derive_negative_labels(hr_df, pos_df, len(pos_df) - len(orig_neg))
+            neg_df = pd.concat([orig_neg, extra], ignore_index=True)
+        else:
+            neg_df = orig_neg
 
         df_tr  = collect_windows(pos_df, neg_df, hr_df, st_df, tr_days)
         df_val = collect_windows(pos_df, neg_df, hr_df, st_df, val_days)
@@ -1022,16 +1032,15 @@ def run_global_ssl(
         train_info[u] = {"days": tr_days.tolist(),  "df": df_tr}
         val_info[u]   = {"days": val_days.tolist(), "df": df_val}
 
-    # 3) Apply sampling across users
+    #  3) Apply sampling across users
     sample_summary = sample_train_info(train_info, mode=sample_mode, random_state=42)
 
     # 4) Build this user's test windows
     tr_days_u, val_days_u, te_days_u = all_splits[uid]
     hr_df_u, st_df_u = load_signal_data(Path(BASE_DATA_DIR) / uid)
-    pos_df_u = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, scenario)
-    neg_df_u = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, 'None')
-    if neg_df_u.empty or len(neg_df_u) < len(pos_df_u):
-        neg_df_u = derive_negative_labels(hr_df_u, pos_df_u, len(pos_df_u))
+    pos_df_u        = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, scenario)
+
+    # <— use the precomputed neg_df_u, do NOT call derive_negative_labels here
     df_te = collect_windows(pos_df_u, neg_df_u, hr_df_u, st_df_u, te_days_u)
 
     # 5) Write split_details.txt with sampling info
@@ -1173,17 +1182,25 @@ if __name__ == "__main__":
     np.random.seed(42)
     tf.random.set_seed(42)
 
-    # build day‐level splits for all users
-    all_splits = {}
+    # ─── build day‐level splits and negatives for all users ─────────────────
+    all_splits   = {}
+    all_negatives = {}     # ← NEW: store per-user neg_df
+
     for u, pairs in ALLOWED_SCENARIOS.items():
         if (args.fruit, args.scenario) not in pairs:
             continue
 
         hr_df, st_df = load_signal_data(Path(BASE_DATA_DIR) / u)
-        pos_df = load_label_data(Path(BASE_DATA_DIR) / u, args.fruit, args.scenario)
-        neg_df = load_label_data(Path(BASE_DATA_DIR) / u, args.fruit, "None")
-        if neg_df.empty or len(neg_df) < len(pos_df):
-            neg_df = derive_negative_labels(hr_df, pos_df, len(pos_df))
+        pos_df       = load_label_data(Path(BASE_DATA_DIR) / u, args.fruit, args.scenario)
+        orig_neg     = load_label_data(Path(BASE_DATA_DIR) / u, args.fruit, 'None')
+
+        if len(orig_neg) < len(pos_df):
+            extra = derive_negative_labels(hr_df, pos_df, len(pos_df) - len(orig_neg))
+            neg_df = pd.concat([orig_neg, extra], ignore_index=True)
+        else:
+            neg_df = orig_neg
+
+        all_negatives[u] = neg_df
 
         try:
             tr_u, val_u, te_u = ensure_train_val_test_days(pos_df, neg_df, hr_df, st_df)
@@ -1197,34 +1214,28 @@ if __name__ == "__main__":
     if args.user not in all_splits:
         print(f"Skipping user {args.user}: no data for {args.fruit}/{args.scenario}.")
         sys.exit(0)
+
+    # retrieve the one and only neg_df for test
+    neg_df_u = all_negatives[args.user]
     tr_days_u, val_days_u, te_days_u = all_splits[args.user]
 
-    # tiny‐data guard
-    hr_df_u, st_df_u = load_signal_data(Path(BASE_DATA_DIR) / args.user)
-    pos_u = load_label_data(Path(BASE_DATA_DIR) / args.user, args.fruit, args.scenario)
-    neg_u = load_label_data(Path(BASE_DATA_DIR) / args.user, args.fruit, "None")
-    if neg_u.empty or len(neg_u) < len(pos_u):
-        neg_u = derive_negative_labels(hr_df_u, pos_u, len(pos_u))
-    n_tr = _count_windows(pos_u, neg_u, hr_df_u, st_df_u, tr_days_u)
-    n_te = _count_windows(pos_u, neg_u, hr_df_u, st_df_u, te_days_u)
-    if n_tr < 2 or n_te < 2:
-        _write_skip_file(user_root, tr_days_u, te_days_u, n_tr, n_te)
-        sys.exit(0)
-
-    # run pipelines
+    # run pipelines, passing neg_df_u into each
     df_gs, auc_gs_m, auc_gs_s = run_global_supervised(
         args.fruit, args.scenario, args.user,
         user_root, all_splits, shared_cnn_root,
-        sample_mode=args.sample_mode
+        sample_mode=args.sample_mode,
+        neg_df_u=neg_df_u
     )
     df_ps, auc_ps_m, auc_ps_s = run_personal_ssl(
         args.user, args.fruit, args.scenario,
         user_root, tr_days_u, val_days_u, te_days_u,
+        neg_df_u=neg_df_u,
         sample_mode=args.sample_mode
     )
     df_gl, auc_gl_m, auc_gl_s = run_global_ssl(
         args.user, args.fruit, args.scenario,
         user_root, shared_enc_root, all_splits,
+        neg_df_u=neg_df_u,
         sample_mode=args.sample_mode
     )
 

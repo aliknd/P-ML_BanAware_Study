@@ -133,7 +133,6 @@ def contrastive_loss(z_i, z_j, temperature=0.1):
     )
     return tf.reduce_mean(loss)
 
-
 # ------------------------------------------------------------------------- #
 # SimCLR training loop
 # ------------------------------------------------------------------------- #
@@ -145,26 +144,37 @@ def train_simclr(encoder, head, train_segs, val_segs,
 
     tr_loss_hist, va_loss_hist = [], []
 
+    # Early‐stopping & LR‐scheduler state
+    best_val = float('inf')
+    wait_es  = 0
+    wait_lr  = 0
+    patience_es = 15
+    patience_lr = 5
+    lr_factor   = 0.5
+    min_lr      = 1e-6
+
     for ep in range(1, epochs + 1):
         # ---- training ----
         idx = np.random.permutation(n_tr)
         total = 0.0
         for i in range(0, n_tr, batch_size):
-            b     = idx[i:i + batch_size]
-            x_i   = train_segs[b]
-            x_j   = apply_augmentations(x_i.copy())
+            b   = idx[i:i + batch_size]
+            x_i = train_segs[b]
+            x_j = apply_augmentations(x_i.copy())
 
             with tf.GradientTape() as tape:
-                z_i = encoder(x_i, training=True)
-                z_j = encoder(x_j, training=True)
-                p_i = head(z_i, training=True)
-                p_j = head(z_j, training=True)
+                z_i  = encoder(x_i, training=True)
+                z_j  = encoder(x_j, training=True)
+                p_i  = head(z_i, training=True)
+                p_j  = head(z_j, training=True)
                 loss = contrastive_loss(p_i, p_j)
 
             vars_ = encoder.trainable_weights + head.trainable_weights
-            opt.apply_gradients(zip(tape.gradient(loss, vars_), vars_))
+            grads  = tape.gradient(loss, vars_)
+            opt.apply_gradients(zip(grads, vars_))
             total += loss.numpy() * len(b)
-        tr_loss_hist.append(total / n_tr)
+        tr_loss = total / n_tr
+        tr_loss_hist.append(tr_loss)
 
         # ---- validation ----
         vm = tf.keras.metrics.Mean()
@@ -175,13 +185,34 @@ def train_simclr(encoder, head, train_segs, val_segs,
             p_i = head(z_i, training=False)
             p_j = head(z_j, training=False)
             vm.update_state(contrastive_loss(p_i, p_j))
-        va_loss_hist.append(vm.result().numpy())
+        va_loss = vm.result().numpy()
+        va_loss_hist.append(va_loss)
 
-        print(f"[SimCLR {ep:>3}/{epochs}]  "
-              f"train={tr_loss_hist[-1]:.4f}  val={va_loss_hist[-1]:.4f}")
+        # ---- callbacks logic ----
+        # Early stopping
+        if va_loss < best_val:
+            best_val = va_loss
+            wait_es  = 0
+            wait_lr  = 0
+        else:
+            wait_es += 1
+            wait_lr += 1
+
+        # Reduce LR on plateau
+        if wait_lr >= patience_lr:
+            new_lr = max(opt.learning_rate.numpy() * lr_factor, min_lr)
+            opt.learning_rate.assign(new_lr)
+            print(f"[SimCLR] reducing lr to {new_lr:.2e}")
+            wait_lr = 0
+
+        # Break if no improvement for patience_es
+        if wait_es >= patience_es:
+            print(f"[SimCLR] early stopping at epoch {ep} (no val_loss improvement for {patience_es} epochs).")
+            break
+
+        print(f"[SimCLR {ep:>3}/{epochs}]  train={tr_loss:.4f}  val={va_loss:.4f}")
 
     return tr_loss_hist, va_loss_hist
-
 
 def build_simclr_encoder(win_size):
     return create_encoder(win_size, 1)

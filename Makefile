@@ -70,6 +70,8 @@ compare_original:
 	    --results-subdir results \
 	    --sample-mode original; \
 	done
+	@echo "→ Aggregating ORIGINAL results…"
+	@python3 -m src.aggregate_comparison --root original --out original.csv
 
 compare_undersample:
 	@echo "→ Running UNDERSAMPLE sampling…"
@@ -83,6 +85,8 @@ compare_undersample:
 	    --results-subdir results \
 	    --sample-mode undersample; \
 	done
+	@echo "→ Aggregating UNDERSAMPLE results…"
+	@python3 -m src.aggregate_comparison --root undersample --out undersample.csv
 
 compare_oversample:
 	@echo "→ Running OVERSAMPLE sampling…"
@@ -96,3 +100,5 @@ compare_oversample:
 	    --results-subdir results \
 	    --sample-mode oversample; \
 	done
+	@echo "→ Aggregating OVERSAMPLE results…"
+	@python3 -m src.aggregate_comparison --root oversample --out oversample.csv
