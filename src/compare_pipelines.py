@@ -821,7 +821,6 @@ def run_global_supervised(
 
     return df_boot, auc_mean, auc_std
 
-# ─── Pipeline #2: Personal-SSL (60/20/20 days + explicit val windows) ─────
 def run_personal_ssl(
     uid: str,
     fruit: str,
@@ -830,7 +829,7 @@ def run_personal_ssl(
     tr_days_u: np.ndarray,
     val_days_u: np.ndarray,
     te_days_u: np.ndarray,
-    neg_df_u: pd.DataFrame,        # ← NEW argument
+    neg_df_u: pd.DataFrame,
     sample_mode: str = "original"
 ):
     """
@@ -840,7 +839,7 @@ def run_personal_ssl(
     2) Train (or load) SSL encoders on TRAIN days.
     3) Window & label for TRAIN/VAL/TEST and write split_details.txt.
     4) Encode into features, then optionally undersample/oversample.
-    5) Log post-sampling summary.
+    5) Log pre- and post-sampling summaries.
     6) Train a small classifier, threshold & bootstrap on TEST.
     """
     print(f"\n>> Personal-SSL ({fruit}_{scenario})")
@@ -854,9 +853,7 @@ def run_personal_ssl(
     # 1) Load signals & labels
     hr_df, st_df = load_signal_data(Path(BASE_DATA_DIR) / uid)
     pos_df       = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, scenario)
-
-    # <— use the precomputed neg_df_u, do NOT call derive_negative_labels here
-    neg_df = neg_df_u
+    neg_df       = neg_df_u  # use precomputed negatives
 
     # 2) Train or load SSL encoders
     enc_hr = _train_or_load_encoder(models_d / 'hr_encoder.keras',
@@ -869,17 +866,29 @@ def run_personal_ssl(
     df_val = collect_windows(pos_df, neg_df, hr_df, st_df, val_days_u)
     df_te  = collect_windows(pos_df, neg_df, hr_df, st_df, te_days_u)
 
+    # 4a) Build train_info for sampling summary
+    train_info = {
+        uid: {
+            "days": tr_days_u.tolist(),
+            "df": df_tr.copy()
+        }
+    }
+
+    # 4b) Apply sampling and capture summary
+    sample_summary = sample_train_info(train_info, mode=sample_mode, random_state=42)
+
+    # 5) Write split details with sampling summary
     write_split_details(
         results_d,
         "personal_ssl",
-        {uid: {"days": tr_days_u.tolist(),  "df": df_tr}},
+        train_info,
         {uid: {"days": val_days_u.tolist(), "df": df_val}},
         (uid, te_days_u.tolist(), df_te),
         sample_mode=sample_mode,
-        sample_summary=None
+        sample_summary=sample_summary
     )
 
-    # 4) Encode into feature vectors
+    # 6) Encode into feature vectors
     def encode(df):
         hr_seq = np.stack(df['hr_seq'])[..., None]
         st_seq = np.stack(df['st_seq'])[..., None]
@@ -896,24 +905,7 @@ def run_personal_ssl(
     X_te  = np.concatenate([H_te, S_te], axis=1)
     y_te  = df_te['state_val'].values
 
-    # 5) Optional sampling on TRAIN & VAL
-    added = removed = 0
-    if sample_mode == "undersample":
-        X_tr, y_tr   = undersample_negatives(X_tr, y_tr, random_state=42)
-        # removed can be computed if needed
-    elif sample_mode == "oversample":
-        X_tr, y_tr, added = oversample_positives(X_tr, y_tr, random_state=42)
-
-    # Log post-sampling summary
-    with open(results_d / "split_details.txt", "a") as f:
-        f.write("=== POST-SAMPLING SUMMARY ===\n")
-        if sample_mode == "undersample":
-            f.write(f"Negatives removed (TRAIN/VAL): see diff above\n")
-        elif sample_mode == "oversample":
-            f.write(f"Synthetic positives added (TRAIN): {added}\n")
-        f.write("\n")
-
-    # 6) Build & train classifier
+    # 7) Build & train classifier
     clf = Sequential([
         Dense(64, activation='relu', input_shape=(X_tr.shape[1],), kernel_regularizer=l2(0.01)),
         BatchNormalization(), Dropout(0.5),
@@ -939,7 +931,7 @@ def run_personal_ssl(
         verbose=2
     )
 
-    # 7) Threshold & bootstrap on TEST
+    # 8) Threshold & bootstrap on TEST
     val_preds  = clf.predict(X_val, verbose=0).flatten()
     thresholds = np.arange(0.0, 1.0001, 0.01)
     scores     = []

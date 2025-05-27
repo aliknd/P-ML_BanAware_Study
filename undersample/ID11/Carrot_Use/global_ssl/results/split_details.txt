@@ -1,0 +1,43 @@
+Pipeline: global_ssl
+Sampling mode: undersample
+GLOBAL  ORIG +113/-230  → USED +109/-113
+Negatives removed: 117
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-34  → USED +13/-15
+  ID11: ORIG +4/-6  → USED +4/-0
+  ID13: ORIG +2/-36  → USED +2/-18
+  ID14: ORIG +36/-38  → USED +35/-19
+  ID15: ORIG +32/-32  → USED +31/-13
+  ID18: ORIG +20/-28  → USED +20/-10
+  ID26: ORIG +5/-56  → USED +4/-38
+
+=== TRAINING DAYS (used for model fitting) ===
+User ID10 TRAIN days: [datetime.date(2023, 12, 8), datetime.date(2023, 12, 18), datetime.date(2023, 11, 30), datetime.date(2023, 12, 15), datetime.date(2023, 12, 6), datetime.date(2023, 12, 21), datetime.date(2023, 12, 19), datetime.date(2023, 12, 17), datetime.date(2023, 12, 1), datetime.date(2023, 11, 27), datetime.date(2023, 12, 14), datetime.date(2023, 11, 28), datetime.date(2023, 12, 13), datetime.date(2023, 12, 16), datetime.date(2023, 12, 11)]
+   windows=28  (+=13, -=15)
+
+User ID11 TRAIN days: [datetime.date(2023, 12, 12), datetime.date(2023, 12, 15), datetime.date(2023, 12, 10), datetime.date(2023, 12, 17), datetime.date(2023, 12, 2), datetime.date(2023, 12, 13), datetime.date(2023, 12, 3), datetime.date(2023, 12, 9)]
+   windows=4  (+=4, -=0)
+
+User ID13 TRAIN days: [datetime.date(2023, 12, 30), datetime.date(2024, 1, 9), datetime.date(2023, 12, 20), datetime.date(2024, 1, 6), datetime.date(2023, 12, 28), datetime.date(2024, 1, 12), datetime.date(2024, 1, 10), datetime.date(2024, 1, 8), datetime.date(2023, 12, 21), datetime.date(2023, 12, 16), datetime.date(2024, 1, 5), datetime.date(2023, 12, 18), datetime.date(2024, 1, 4), datetime.date(2024, 1, 7), datetime.date(2024, 1, 2)]
+   windows=20  (+=2, -=18)
+
+User ID14 TRAIN days: [datetime.date(2023, 12, 22), datetime.date(2024, 1, 14), datetime.date(2024, 1, 2), datetime.date(2024, 1, 17), datetime.date(2024, 1, 15), datetime.date(2024, 1, 5), datetime.date(2024, 1, 4), datetime.date(2024, 1, 6), datetime.date(2023, 12, 29), datetime.date(2024, 1, 19), datetime.date(2024, 1, 10), datetime.date(2023, 12, 28), datetime.date(2023, 12, 23), datetime.date(2023, 12, 24), datetime.date(2024, 1, 16), datetime.date(2024, 1, 1), datetime.date(2024, 1, 8)]
+   windows=54  (+=35, -=19)
+
+User ID15 TRAIN days: [datetime.date(2023, 12, 22), datetime.date(2024, 1, 14), datetime.date(2024, 1, 2), datetime.date(2024, 1, 17), datetime.date(2024, 1, 15), datetime.date(2024, 1, 5), datetime.date(2024, 1, 4), datetime.date(2024, 1, 6), datetime.date(2023, 12, 29), datetime.date(2024, 1, 19), datetime.date(2024, 1, 10), datetime.date(2023, 12, 28), datetime.date(2023, 12, 23), datetime.date(2023, 12, 24), datetime.date(2024, 1, 16), datetime.date(2024, 1, 1), datetime.date(2024, 1, 8)]
+   windows=44  (+=31, -=13)
+
+User ID18 TRAIN days: [datetime.date(2024, 1, 21), datetime.date(2024, 2, 11), datetime.date(2024, 2, 1), datetime.date(2024, 2, 3), datetime.date(2024, 1, 30), datetime.date(2024, 2, 12), datetime.date(2024, 2, 13), datetime.date(2024, 1, 18), datetime.date(2024, 1, 22), datetime.date(2024, 2, 6), datetime.date(2024, 2, 16), datetime.date(2024, 1, 28), datetime.date(2024, 1, 24), datetime.date(2024, 1, 31), datetime.date(2024, 1, 19), datetime.date(2024, 2, 8), datetime.date(2024, 1, 25), datetime.date(2024, 1, 23)]
+   windows=30  (+=20, -=10)
+
+User ID26 TRAIN days: [datetime.date(2024, 3, 30), datetime.date(2024, 3, 20), datetime.date(2024, 4, 9), datetime.date(2024, 3, 10), datetime.date(2024, 3, 26), datetime.date(2024, 4, 3), datetime.date(2024, 4, 5), datetime.date(2024, 4, 1), datetime.date(2024, 4, 6), datetime.date(2024, 3, 9), datetime.date(2024, 3, 22), datetime.date(2024, 4, 8), datetime.date(2024, 3, 25), datetime.date(2024, 3, 27), datetime.date(2024, 3, 23), datetime.date(2024, 3, 12), datetime.date(2024, 3, 29), datetime.date(2024, 3, 8), datetime.date(2024, 3, 11), datetime.date(2024, 4, 7)]
+   windows=42  (+=4, -=38)
+
+=== VALIDATION DAYS (only target user) ===
+User ID11 VAL days: [datetime.date(2023, 12, 20), datetime.date(2023, 12, 19), datetime.date(2023, 12, 5)]
+   windows=5  (+=2, -=3)
+
+=== TEST DAYS (only target user) ===
+User ID11 TEST days: [datetime.date(2023, 12, 16), datetime.date(2023, 12, 18), datetime.date(2023, 12, 1)]
+   windows=3  (+=1, -=2)

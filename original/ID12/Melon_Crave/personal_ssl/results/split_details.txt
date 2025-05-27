@@ -1,5 +1,10 @@
 Pipeline: personal_ssl
 Sampling mode: original
+GLOBAL  ORIG +10/-12  → USED +10/-12
+
+USER-LEVEL SAMPLING:
+  ID12: ORIG +10/-12  → USED +10/-12
+
 === TRAINING DAYS (used for model fitting) ===
 User ID12 TRAIN days: [datetime.date(2023, 12, 20), datetime.date(2023, 12, 23), datetime.date(2023, 12, 14), datetime.date(2023, 12, 16), datetime.date(2023, 12, 4), datetime.date(2023, 12, 8), datetime.date(2023, 12, 6), datetime.date(2023, 12, 27), datetime.date(2023, 12, 13), datetime.date(2023, 12, 11), datetime.date(2023, 12, 5), datetime.date(2023, 12, 17)]
    windows=22  (+=10, -=12)
@@ -11,5 +16,3 @@ User ID12 VAL days: [datetime.date(2023, 12, 7), datetime.date(2023, 12, 29), da
 === TEST DAYS (only target user) ===
 User ID12 TEST days: [datetime.date(2023, 12, 2), datetime.date(2023, 12, 19), datetime.date(2023, 12, 12), datetime.date(2023, 12, 3), datetime.date(2023, 12, 22)]
    windows=7  (+=5, -=2)
-=== POST-SAMPLING SUMMARY ===
-

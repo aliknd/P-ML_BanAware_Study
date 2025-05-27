@@ -1,0 +1,19 @@
+Pipeline: personal_ssl
+Sampling mode: oversample
+GLOBAL  ORIG +9/-65  → USED +65/-65
+Synthetic positives added: 56
+
+USER-LEVEL SAMPLING:
+  ID5: ORIG +9/-65  → USED +65/-65
+
+=== TRAINING DAYS (used for model fitting) ===
+User ID5 TRAIN days: [datetime.date(2023, 12, 5), datetime.date(2023, 11, 26), datetime.date(2023, 12, 12), datetime.date(2023, 11, 19), datetime.date(2023, 11, 14), datetime.date(2023, 11, 17), datetime.date(2023, 12, 2), datetime.date(2023, 11, 18), datetime.date(2023, 11, 30), datetime.date(2023, 12, 3), datetime.date(2023, 12, 4), datetime.date(2023, 11, 28), datetime.date(2023, 11, 20), datetime.date(2023, 11, 25), datetime.date(2023, 11, 16), datetime.date(2023, 12, 10), datetime.date(2023, 11, 24), datetime.date(2023, 11, 27)]
+   windows=130  (+=65, -=65)
+
+=== VALIDATION DAYS (only target user) ===
+User ID5 VAL days: [datetime.date(2023, 12, 6), datetime.date(2023, 12, 14), datetime.date(2023, 12, 8), datetime.date(2023, 11, 21), datetime.date(2023, 12, 9), datetime.date(2023, 11, 15)]
+   windows=22  (+=5, -=17)
+
+=== TEST DAYS (only target user) ===
+User ID5 TEST days: [datetime.date(2023, 12, 11), datetime.date(2023, 11, 29), datetime.date(2023, 12, 7), datetime.date(2023, 12, 1), datetime.date(2023, 11, 22), datetime.date(2023, 11, 23), datetime.date(2023, 12, 13)]
+   windows=30  (+=4, -=26)

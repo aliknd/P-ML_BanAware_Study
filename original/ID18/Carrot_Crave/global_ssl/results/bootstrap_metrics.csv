@@ -1,2 +1,2 @@
 Threshold,Sensitivity_Mean,Sensitivity_STD,Specificity_Mean,Specificity_STD,Accuracy_Mean,Accuracy_STD
-0.23,1.0,0.0,0.0,0.0,0.645625,0.16815100099058028
+0.3,0.8618107142857143,0.16370040360503424,0.0,0.0,0.55625,0.176931461990914

@@ -1,8 +1,14 @@
 Pipeline: personal_ssl
 Sampling mode: undersample
+GLOBAL  ORIG +2/-48  → USED +2/-2
+Negatives removed: 46
+
+USER-LEVEL SAMPLING:
+  ID9: ORIG +2/-48  → USED +2/-2
+
 === TRAINING DAYS (used for model fitting) ===
 User ID9 TRAIN days: [datetime.date(2023, 12, 13), datetime.date(2023, 12, 9), datetime.date(2023, 12, 2), datetime.date(2023, 12, 11), datetime.date(2023, 12, 6), datetime.date(2023, 12, 10), datetime.date(2023, 12, 20), datetime.date(2023, 11, 21), datetime.date(2023, 12, 14), datetime.date(2023, 12, 12), datetime.date(2023, 12, 19), datetime.date(2023, 11, 30), datetime.date(2023, 12, 8), datetime.date(2023, 12, 7), datetime.date(2023, 11, 23), datetime.date(2023, 12, 18), datetime.date(2023, 12, 1), datetime.date(2023, 11, 26)]
-   windows=50  (+=2, -=48)
+   windows=4  (+=2, -=2)
 
 === VALIDATION DAYS (only target user) ===
 User ID9 VAL days: [datetime.date(2023, 12, 17), datetime.date(2023, 11, 22), datetime.date(2023, 12, 15), datetime.date(2023, 11, 24), datetime.date(2023, 11, 25), datetime.date(2023, 12, 5)]
@@ -11,6 +17,3 @@ User ID9 VAL days: [datetime.date(2023, 12, 17), datetime.date(2023, 11, 22), da
 === TEST DAYS (only target user) ===
 User ID9 TEST days: [datetime.date(2023, 12, 16), datetime.date(2023, 12, 3), datetime.date(2023, 12, 4), datetime.date(2023, 11, 27), datetime.date(2023, 11, 28), datetime.date(2023, 11, 29)]
    windows=20  (+=2, -=18)
-=== POST-SAMPLING SUMMARY ===
-Negatives removed (TRAIN/VAL): see diff above
-

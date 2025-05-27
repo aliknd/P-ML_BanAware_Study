@@ -1,0 +1,19 @@
+Pipeline: personal_ssl
+Sampling mode: oversample
+GLOBAL  ORIG +7/-9  → USED +9/-9
+Synthetic positives added: 2
+
+USER-LEVEL SAMPLING:
+  ID20: ORIG +7/-9  → USED +9/-9
+
+=== TRAINING DAYS (used for model fitting) ===
+User ID20 TRAIN days: [datetime.date(2024, 4, 17), datetime.date(2024, 4, 18), datetime.date(2024, 2, 10), datetime.date(2024, 4, 16), datetime.date(2024, 2, 14), datetime.date(2024, 3, 8), datetime.date(2024, 2, 24), datetime.date(2024, 3, 1), datetime.date(2024, 2, 27), datetime.date(2024, 3, 2), datetime.date(2024, 2, 9)]
+   windows=18  (+=9, -=9)
+
+=== VALIDATION DAYS (only target user) ===
+User ID20 VAL days: [datetime.date(2024, 2, 11), datetime.date(2024, 2, 21), datetime.date(2024, 2, 23), datetime.date(2024, 3, 4)]
+   windows=9  (+=3, -=6)
+
+=== TEST DAYS (only target user) ===
+User ID20 TEST days: [datetime.date(2024, 2, 7), datetime.date(2024, 2, 12), datetime.date(2024, 2, 29), datetime.date(2024, 2, 8)]
+   windows=5  (+=3, -=2)
