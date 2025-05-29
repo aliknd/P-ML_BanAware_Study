@@ -48,6 +48,7 @@ from sklearn.metrics import roc_curve
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras import Model
+from sklearn.metrics import confusion_matrix
 
 # ─── Seed everything for split reproducibility ─────────────────────────────
 random.seed(42)
@@ -328,6 +329,62 @@ def sample_train_info(train_info, mode, random_state=42):
         },
         "per_user": per_user
     }
+
+#=====================================================================
+# Helper 1: Day Split without Validation
+#=====================================================================
+def ensure_train_test_days(pos_df, neg_df, hr_df, st_df,
+                            test_frac=0.2, seed=42):
+    '''
+    Split all event days into TRAIN and TEST (no validation split).
+    Returns train_days, test_days as numpy arrays of date objects.
+    '''
+    days = np.array(sorted(
+        np.concatenate([
+            pos_df['hawaii_createdat_time'].dt.date.unique(),
+            neg_df['hawaii_createdat_time'].dt.date.unique()
+        ])
+    ))
+    train_days, test_days = train_test_split(
+        days,
+        test_size=test_frac,
+        shuffle=True,
+        random_state=seed
+    )
+    return np.array(train_days), np.array(test_days)
+
+#=====================================================================
+# Helper 2: Threshold Selection on Full Training Set
+#=====================================================================
+from sklearn.metrics import confusion_matrix
+
+def select_threshold_train(model, X, y,
+                              thresholds=np.arange(0.0, 1.0001, 0.01)):
+    """
+    Pick the threshold that maximizes 0.7*TPR + 0.3*Specificity.
+    """
+    y_true = y.astype(int)
+    probs  = model.predict(X, verbose=0).ravel()
+
+    best_score = -1.0
+    best_thr   = 0.5
+
+    for thr in thresholds:
+        preds = (probs >= thr).astype(int)
+        # require both classes present
+        if len(np.unique(preds)) < 2:
+            continue
+
+        tn, fp, fn, tp = confusion_matrix(y_true, preds, labels=[0,1]).ravel()
+        tpr  = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+        spec = tn / (tn + fp) if (tn + fp) > 0 else 0.0
+
+        score = 0.7 * tpr + 0.3 * spec
+        if score > best_score:
+            best_score = score
+            best_thr   = thr
+
+    return float(best_thr)
 
 def ensure_train_val_test_days(pos_df, neg_df, hr_df, st_df):
     """
@@ -687,7 +744,7 @@ def ensure_global_supervised(shared_cnn_root, fruit, scenario, all_splits, uid):
     m.save(model_path)
     return m, sdir
 
-# ─── Pipeline #1: Global-Supervised (60/20/20 + explicit val) ─────────────
+# ─── Pipeline #1: Global-Supervised with Train-Set Threshold ──────────────
 def run_global_supervised(
     fruit: str,
     scenario: str,
@@ -695,19 +752,9 @@ def run_global_supervised(
     user_root: Path,
     all_splits: dict,
     shared_cnn_root: Path,
-    neg_df_u: pd.DataFrame,        # ← NEW argument
+    neg_df_u: pd.DataFrame,
     sample_mode: str = "original",
 ):
-    """
-    Pipeline #1: Global-Supervised
-
-    1) Train or load a single CNN on ALL users' train-day windows,
-       validating only on this user's validation windows.
-    2) Optionally undersample or oversample TRAIN windows across users.
-    3) Copy the model & plots into the user's folder.
-    4) Build train/val/test splits, write split_details.txt with sampling info,
-       then threshold & bootstrap on TEST.
-    """
     print(f"\n>> Global-Supervised ({fruit}_{scenario})")
 
     # Directories
@@ -717,7 +764,7 @@ def run_global_supervised(
     models_d.mkdir(parents=True, exist_ok=True)
     results_d.mkdir(parents=True, exist_ok=True)
 
-    # 1) Train or load the shared CNN (validating on this user's VAL only)
+    # 1) Train or load the shared CNN (validating inside ensure_global_supervised)
     model, src_dir = ensure_global_supervised(
         shared_cnn_root, fruit, scenario, all_splits, uid
     )
@@ -728,15 +775,15 @@ def run_global_supervised(
         elif fpath.suffix == '.png':
             shutil.copy2(fpath, results_d / fpath.name)
 
-    # 2) Build per-user train_info and val_info
+    # 2) Build per-user train_info and val_info (for split_details)
     train_info = {}
     val_info   = {}
     for u, (tr_days, val_days, _) in all_splits.items():
         hr_df, st_df = load_signal_data(Path(BASE_DATA_DIR) / u)
-        pos_df = load_label_data(Path(BASE_DATA_DIR) / u, fruit, scenario)
+        pos_df   = load_label_data(Path(BASE_DATA_DIR) / u, fruit, scenario)
         orig_neg = load_label_data(Path(BASE_DATA_DIR) / u, fruit, 'None')
         if len(orig_neg) < len(pos_df):
-            extra = derive_negative_labels(hr_df, pos_df, len(pos_df) - len(orig_neg))
+            extra  = derive_negative_labels(hr_df, pos_df, len(pos_df) - len(orig_neg))
             neg_df = pd.concat([orig_neg, extra], ignore_index=True)
         else:
             neg_df = orig_neg
@@ -744,21 +791,21 @@ def run_global_supervised(
         df_tr  = collect_windows(pos_df, neg_df, hr_df, st_df, tr_days)
         df_val = collect_windows(pos_df, neg_df, hr_df, st_df, val_days)
 
-        train_info[u] = {"days": tr_days.tolist(),  "df": df_tr}
+        train_info[u] = {"days": tr_days.tolist(), "df": df_tr}
         val_info[u]   = {"days": val_days.tolist(), "df": df_val}
 
-    # 3) Apply sampling (original, undersample, or oversample)
+    # 3) Apply sampling if requested
     sample_summary = sample_train_info(train_info, mode=sample_mode, random_state=42)
 
-    # 4) Prepare this user's TEST windows
+    # 4) Prepare TEST windows for the target user
     tr_days_u, val_days_u, te_days_u = all_splits[uid]
     hr_df_u, st_df_u = load_signal_data(Path(BASE_DATA_DIR) / uid)
     pos_df_u = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, scenario)
-
-    # <— use the precomputed neg_df_u, do NOT call derive_negative_labels here
+    if neg_df_u.empty or len(neg_df_u) < len(pos_df_u):
+        neg_df_u = derive_negative_labels(hr_df_u, pos_df_u, len(pos_df_u))
     df_te = collect_windows(pos_df_u, neg_df_u, hr_df_u, st_df_u, te_days_u)
 
-    # 5) Write split_details.txt (with sampling info and original vs used counts)
+    # 5) Write split_details.txt
     write_split_details(
         results_d,
         "global_supervised",
@@ -769,57 +816,48 @@ def run_global_supervised(
         sample_summary=sample_summary
     )
 
-    # 6) Build X/y arrays for training, validation, and test
-    def build_XY(df_list):
-        X = np.stack([np.vstack([h, s]).T
-                      for h, s in zip(df_list['hr_seq'], df_list['st_seq'])])
-        y = df_list['state_val'].values
-        return X, y
+    # 6) Build X_train, y_train from train_info
+    df_train = pd.concat([info["df"] for info in train_info.values()])
+    X_train = np.stack([
+        np.vstack([h, s]).T
+        for h, s in zip(df_train["hr_seq"], df_train["st_seq"])
+    ])
+    y_train = df_train["state_val"].values
 
-    X_tr, y_tr   = build_XY(pd.concat([v["df"] for v in train_info.values()]))
-    X_val, y_val = build_XY(val_info[uid]["df"])
-    X_te, y_te   = build_XY(df_te)
+    # 7) Build X_test, y_test
+    X_test = np.stack([
+        np.vstack([h, s]).T
+        for h, s in zip(df_te["hr_seq"], df_te["st_seq"])
+    ])
+    y_test = df_te["state_val"].values
 
-    # 7) Threshold selection on VAL & bootstrap on TEST
-    cw_vals = compute_class_weight('balanced', classes=np.unique(y_tr), y=y_tr)
-    class_weight = {i: cw_vals[i] for i in range(len(cw_vals))}
+    # 8) Threshold selection on the FULL training set
+    best_thr = select_threshold_train(model, X_train, y_train)
+    (results_d / "selected_threshold.txt").write_text(f"{best_thr:.4f}\n")
 
-    val_preds  = model.predict(X_val, verbose=0).flatten()
-    thresholds = np.arange(0.0, 1.0001, 0.01)
-    scores = []
-    for thr in thresholds:
-        pbin = (val_preds >= thr).astype(int)
-        tp = ((pbin == 1) & (y_val == 1)).sum()
-        fn = ((pbin == 0) & (y_val == 1)).sum()
-        fp = ((pbin == 1) & (y_val == 0)).sum()
-        tn = ((pbin == 0) & (y_val == 0)).sum()
-        tpr  = tp / (tp + fn) if tp + fn > 0 else 0.0
-        spec = tn / (tn + fp) if tn + fp > 0 else 0.0
-        scores.append(0.7 * tpr + 0.3 * spec)
-
-    best_threshold = float(thresholds[np.argmax(scores)])
-    (results_d / "selected_threshold.txt").write_text(f"{best_threshold:.4f}\n")
-
-    df_boot, auc_mean, auc_std = bootstrap_threshold_metrics(
-        y_te,
-        model.predict(X_te, verbose=0).flatten(),
-        thresholds=np.array([best_threshold]),
+    # 9) Bootstrap & plot on TEST
+    probs_te = model.predict(X_test, verbose=0).ravel()
+    df_boot, auc_m, auc_s = bootstrap_threshold_metrics(
+        y_test,
+        probs_te,
+        thresholds=np.array([best_thr]),
         sample_frac=0.7,
         n_iters=1000,
         rng_seed=42
     )
     df_boot.to_csv(results_d / "bootstrap_metrics.csv", index=False)
     plot_thresholds(
-        y_te,
-        model.predict(X_te, verbose=0).flatten(),
+        y_test,
+        probs_te,
         str(results_d),
         f"{uid} {fruit}_{scenario} (global_supervised)",
-        thresholds=np.array([best_threshold]),
+        thresholds=np.array([best_thr]),
         sample_frac=0.7,
         n_iters=1000
     )
 
-    return df_boot, auc_mean, auc_std
+    return df_boot, auc_m, auc_s
+
 
 def run_personal_ssl(
     uid: str,
@@ -832,18 +870,9 @@ def run_personal_ssl(
     neg_df_u: pd.DataFrame,
     sample_mode: str = "original"
 ):
-    """
-    Pipeline #2: Personal-SSL
-
-    1) Load this user's signals & labels.
-    2) Train (or load) SSL encoders on TRAIN days.
-    3) Window & label for TRAIN/VAL/TEST and write split_details.txt.
-    4) Encode into features, then optionally undersample/oversample.
-    5) Log pre- and post-sampling summaries.
-    6) Train a small classifier, threshold & bootstrap on TEST.
-    """
     print(f"\n>> Personal-SSL ({fruit}_{scenario})")
 
+    # Directories
     out_dir   = user_root / 'personal_ssl'
     models_d  = out_dir / 'models_saved'
     results_d = out_dir / 'results'
@@ -851,9 +880,9 @@ def run_personal_ssl(
     results_d.mkdir(parents=True, exist_ok=True)
 
     # 1) Load signals & labels
-    hr_df, st_df = load_signal_data(Path(BASE_DATA_DIR) / uid)
-    pos_df       = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, scenario)
-    neg_df       = neg_df_u  # use precomputed negatives
+    hr_df, st_df  = load_signal_data(Path(BASE_DATA_DIR) / uid)
+    pos_df = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, scenario)
+    neg_df = neg_df_u
 
     # 2) Train or load SSL encoders
     enc_hr = _train_or_load_encoder(models_d / 'hr_encoder.keras',
@@ -866,18 +895,11 @@ def run_personal_ssl(
     df_val = collect_windows(pos_df, neg_df, hr_df, st_df, val_days_u)
     df_te  = collect_windows(pos_df, neg_df, hr_df, st_df, te_days_u)
 
-    # 4a) Build train_info for sampling summary
-    train_info = {
-        uid: {
-            "days": tr_days_u.tolist(),
-            "df": df_tr.copy()
-        }
-    }
-
-    # 4b) Apply sampling and capture summary
+    # 4) Sampling summary
+    train_info = {uid: {"days": tr_days_u.tolist(), "df": df_tr.copy()}}
     sample_summary = sample_train_info(train_info, mode=sample_mode, random_state=42)
 
-    # 5) Write split details with sampling summary
+    # 5) Write split details
     write_split_details(
         results_d,
         "personal_ssl",
@@ -894,82 +916,69 @@ def run_personal_ssl(
         st_seq = np.stack(df['st_seq'])[..., None]
         return enc_hr.predict(hr_seq, verbose=0), enc_st.predict(st_seq, verbose=0)
 
-    H_tr,  S_tr  = encode(df_tr)
-    H_val, S_val = encode(df_val)
-    H_te,  S_te  = encode(df_te)
+    H_tr, S_tr   = encode(df_tr)
+    H_val, S_val = encode(df_val)              # NEW: encode validation set
+    H_te, S_te   = encode(df_te)
 
-    X_tr = np.concatenate([H_tr, S_tr], axis=1)
-    y_tr = df_tr['state_val'].values
-    X_val = np.concatenate([H_val, S_val], axis=1)
-    y_val = df_val['state_val'].values
-    X_te  = np.concatenate([H_te, S_te], axis=1)
-    y_te  = df_te['state_val'].values
+    X_train = np.concatenate([H_tr, S_tr], axis=1)
+    y_train = df_tr['state_val'].values
+    X_val   = np.concatenate([H_val, S_val], axis=1)   # NEW: build X_val
+    y_val   = df_val['state_val'].values               # NEW: build y_val
+    X_test  = np.concatenate([H_te, S_te], axis=1)
+    y_test  = df_te['state_val'].values
 
-    # 7) Build & train classifier
+    # 7) Build & train classifier with explicit val_data and balanced weights
     clf = Sequential([
-        Dense(64, activation='relu', input_shape=(X_tr.shape[1],), kernel_regularizer=l2(0.01)),
-        BatchNormalization(), Dropout(0.5),
-        Dense(32, activation='relu', kernel_regularizer=l2(0.01)),
-        Dropout(0.5),
-        Dense(16, activation='relu', kernel_regularizer=l2(0.01)),
-        Dropout(0.5),
-        Dense(1, activation='sigmoid')
+        layers.Dense(64, activation='relu', input_shape=(X_train.shape[1],), kernel_regularizer=l2(0.01)),
+        layers.BatchNormalization(), layers.Dropout(0.5),
+        layers.Dense(32, activation='relu', kernel_regularizer=l2(0.01)), layers.Dropout(0.5),
+        layers.Dense(16, activation='relu', kernel_regularizer=l2(0.01)), layers.Dropout(0.5),
+        layers.Dense(1, activation='sigmoid')
     ])
     clf.compile(optimizer=Adam(1e-3), loss='binary_crossentropy', metrics=['accuracy'])
-
     es = EarlyStopping(monitor='val_loss', patience=CLF_PATIENCE, restore_best_weights=True, verbose=1)
-    cw_vals = compute_class_weight("balanced", classes=np.unique(y_tr), y=y_tr)
+
+    # NEW: compute balanced class weights
+    cw_vals = compute_class_weight('balanced', classes=np.unique(y_train), y=y_train)
     class_weight = {i: cw_vals[i] for i in range(len(cw_vals))}
 
     clf.fit(
-        X_tr, y_tr,
-        validation_data=(X_val, y_val),
+        X_train, y_train,
+        validation_data=(X_val, y_val),   # REVISED
         epochs=CLF_EPOCHS,
         batch_size=16,
-        class_weight=class_weight,
+        class_weight=class_weight,        # REVISED
         callbacks=[es],
         verbose=2
     )
 
-    # 8) Threshold & bootstrap on TEST
-    val_preds  = clf.predict(X_val, verbose=0).flatten()
-    thresholds = np.arange(0.0, 1.0001, 0.01)
-    scores     = []
-    for thr in thresholds:
-        pbin = (val_preds >= thr).astype(int)
-        tp = ((pbin == 1) & (y_val == 1)).sum()
-        fn = ((pbin == 0) & (y_val == 1)).sum()
-        fp = ((pbin == 1) & (y_val == 0)).sum()
-        tn = ((pbin == 0) & (y_val == 0)).sum()
-        tpr  = tp / (tp + fn) if tp + fn > 0 else 0.0
-        spec = tn / (tn + fp) if tn + fp > 0 else 0.0
-        scores.append(0.7 * tpr + 0.3 * spec)
+    # 8) Threshold scan on the FULL training set
+    best_thr = select_threshold_train(clf, X_train, y_train)
+    (results_d / "selected_threshold.txt").write_text(f"{best_thr:.4f}\n")
 
-    best_threshold = float(thresholds[np.argmax(scores)])
-    (results_d / "selected_threshold.txt").write_text(f"{best_threshold:.4f}\n")
-
-    df_boot, auc_mean, auc_std = bootstrap_threshold_metrics(
-        y_te,
-        clf.predict(X_te, verbose=0).flatten(),
-        thresholds=np.array([best_threshold]),
+    # 9) Bootstrap & plot on TEST
+    probs_te = clf.predict(X_test, verbose=0).ravel()
+    df_boot, auc_m, auc_s = bootstrap_threshold_metrics(
+        y_test,
+        probs_te,
+        thresholds=np.array([best_thr]),
         sample_frac=0.7,
         n_iters=1000,
         rng_seed=42
     )
     df_boot.to_csv(results_d / "bootstrap_metrics.csv", index=False)
     plot_thresholds(
-        y_te,
-        clf.predict(X_te, verbose=0).flatten(),
+        y_test,
+        probs_te,
         str(results_d),
         f"{uid} {fruit}_{scenario} (personal_ssl)",
-        thresholds=np.array([best_threshold]),
+        thresholds=np.array([best_thr]),
         sample_frac=0.7,
         n_iters=1000
     )
 
-    return df_boot, auc_mean, auc_std
+    return df_boot, auc_m, auc_s
 
-# ─── Pipeline #3: Global-SSL ───────────────────────────────────────────────
 def run_global_ssl(
     uid: str,
     fruit: str,
@@ -977,18 +986,12 @@ def run_global_ssl(
     user_root: Path,
     shared_enc_root: Path,
     all_splits: dict,
-    neg_df_u: pd.DataFrame,        # ← NEW argument
+    neg_df_u: pd.DataFrame,
     sample_mode: str = "original"
 ):
-    """
-    Pipeline #3: Global-SSL
-
-    1) Train or load shared SSL encoders on all users' train-day windows.
-    2) Optionally undersample or oversample those windows across users.
-    3) Validate and test only on this user's days.
-    """
     print(f"\n>> Global-SSL ({fruit}_{scenario})")
 
+    # Directories
     out_dir   = user_root / 'global_ssl'
     models_d  = out_dir / 'models_saved'
     results_d = out_dir / 'results'
@@ -1010,10 +1013,10 @@ def run_global_ssl(
     val_info   = {}
     for u, (tr_days, val_days, _) in all_splits.items():
         hr_df, st_df = load_signal_data(Path(BASE_DATA_DIR) / u)
-        pos_df = load_label_data(Path(BASE_DATA_DIR) / u, fruit, scenario)
-        orig_neg = load_label_data(Path(BASE_DATA_DIR) / u, fruit, 'None')
+        pos_df       = load_label_data(Path(BASE_DATA_DIR) / u, fruit, scenario)
+        orig_neg     = load_label_data(Path(BASE_DATA_DIR) / u, fruit, 'None')
         if len(orig_neg) < len(pos_df):
-            extra = derive_negative_labels(hr_df, pos_df, len(pos_df) - len(orig_neg))
+            extra  = derive_negative_labels(hr_df, pos_df, len(pos_df) - len(orig_neg))
             neg_df = pd.concat([orig_neg, extra], ignore_index=True)
         else:
             neg_df = orig_neg
@@ -1024,18 +1027,18 @@ def run_global_ssl(
         train_info[u] = {"days": tr_days.tolist(),  "df": df_tr}
         val_info[u]   = {"days": val_days.tolist(), "df": df_val}
 
-    #  3) Apply sampling across users
+    # 3) Apply sampling across users
     sample_summary = sample_train_info(train_info, mode=sample_mode, random_state=42)
 
     # 4) Build this user's test windows
     tr_days_u, val_days_u, te_days_u = all_splits[uid]
     hr_df_u, st_df_u = load_signal_data(Path(BASE_DATA_DIR) / uid)
     pos_df_u        = load_label_data(Path(BASE_DATA_DIR) / uid, fruit, scenario)
+    if len(neg_df_u) < len(pos_df_u):
+        neg_df_u = derive_negative_labels(hr_df_u, pos_df_u, len(pos_df_u))
+    df_te           = collect_windows(pos_df_u, neg_df_u, hr_df_u, st_df_u, te_days_u)
 
-    # <— use the precomputed neg_df_u, do NOT call derive_negative_labels here
-    df_te = collect_windows(pos_df_u, neg_df_u, hr_df_u, st_df_u, te_days_u)
-
-    # 5) Write split_details.txt with sampling info
+    # 5) Write split_details.txt
     write_split_details(
         results_d,
         "global_ssl",
@@ -1050,42 +1053,36 @@ def run_global_ssl(
     def encode(df):
         hr_seq = np.stack(df['hr_seq'])[..., None]
         st_seq = np.stack(df['st_seq'])[..., None]
-        return enc_hr.predict(hr_seq, verbose=0), enc_st.predict(st_seq, verbose=0)
+        H = enc_hr.predict(hr_seq, verbose=0)
+        S = enc_st.predict(st_seq, verbose=0)
+        return H, S
 
-    H_tr,  S_tr  = encode(pd.concat([v["df"] for v in train_info.values()]))
-    df_val_u      = val_info[uid]["df"]
+    df_all_tr    = pd.concat([v["df"] for v in train_info.values()], ignore_index=True)
+    H_tr, S_tr   = encode(df_all_tr)
+    df_val_u     = val_info[uid]["df"]
     H_val, S_val = encode(df_val_u)
-    H_te,  S_te  = encode(df_te)
+    H_te, S_te   = encode(df_te)
 
-    X_tr = np.concatenate([H_tr, S_tr], axis=1)
-    y_tr = pd.concat([v["df"] for v in train_info.values()])['state_val'].values
-    X_val = np.concatenate([H_val, S_val], axis=1)
-    y_val = df_val_u['state_val'].values
-    X_te  = np.concatenate([H_te, S_te], axis=1)
-    y_te  = df_te['state_val'].values
+    X_tr = np.concatenate([H_tr, S_tr], axis=1).astype('float32')
+    y_tr = df_all_tr['state_val'].values.astype('float32')
+    X_val = np.concatenate([H_val, S_val], axis=1).astype('float32')
+    y_val = df_val_u['state_val'].values.astype('float32')
+    X_te  = np.concatenate([H_te, S_te], axis=1).astype('float32')
+    y_te  = df_te['state_val'].values.astype('float32')
 
-    # ─── **NEW**: ensure everything is float32 ───────────────────────────────
-    X_tr  = X_tr.astype('float32')
-    y_tr  = y_tr.astype('float32')
-    X_val = X_val.astype('float32')
-    y_val = y_val.astype('float32')
-    X_te  = X_te.astype('float32')
-    y_te  = y_te.astype('float32')
-
-    # 7) Train classifier and threshold/bootstrap
+    # 7) Train classifier
     clf = Sequential([
         Dense(64, activation='relu', input_shape=(X_tr.shape[1],), kernel_regularizer=l2(0.01)),
         BatchNormalization(), Dropout(0.5),
-        Dense(32, activation='relu', kernel_regularizer=l2(0.01)),
-        Dropout(0.5),
-        Dense(16, activation='relu', kernel_regularizer=l2(0.01)),
-        Dropout(0.5),
+        Dense(32, activation='relu', kernel_regularizer=l2(0.01)), Dropout(0.5),
+        Dense(16, activation='relu', kernel_regularizer=l2(0.01)), Dropout(0.5),
         Dense(1, activation='sigmoid')
     ])
     clf.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
-    es = EarlyStopping(monitor='val_loss', patience=CLF_PATIENCE, restore_best_weights=True, verbose=1)
-    cw_vals = compute_class_weight("balanced", classes=np.unique(y_tr), y=y_tr)
+    es          = EarlyStopping(monitor='val_loss', patience=CLF_PATIENCE,
+                                restore_best_weights=True, verbose=1)
+    cw_vals     = compute_class_weight("balanced", classes=np.unique(y_tr), y=y_tr)
     class_weight = {i: cw_vals[i] for i in range(len(cw_vals))}
 
     clf.fit(
@@ -1098,27 +1095,15 @@ def run_global_ssl(
         verbose=2
     )
 
-    # 8) Evaluate on TEST
-    val_preds  = clf.predict(X_val, verbose=0).flatten()
-    thresholds = np.arange(0.0, 1.0001, 0.01)
-    scores     = []
-    for thr in thresholds:
-        pbin = (val_preds >= thr).astype(int)
-        tp = ((pbin == 1) & (y_val == 1)).sum()
-        fn = ((pbin == 0) & (y_val == 1)).sum()
-        fp = ((pbin == 1) & (y_val == 0)).sum()
-        tn = ((pbin == 0) & (y_val == 0)).sum()
-        tpr  = tp / (tp + fn) if tp + fn > 0 else 0.0
-        spec = tn / (tn + fp) if tn + fp > 0 else 0.0
-        scores.append(0.7 * tpr + 0.3 * spec)
+    # 8) Threshold selection on the FULL training set (instead of validation)
+    best_thr = select_threshold_train(clf, X_tr, y_tr)
+    (results_d / "selected_threshold.txt").write_text(f"{best_thr:.4f}\n")
 
-    best_threshold = float(thresholds[np.argmax(scores)])
-    (results_d / "selected_threshold.txt").write_text(f"{best_threshold:.4f}\n")
-
+    # 9) Bootstrap & plot on TEST
     df_boot, auc_mean, auc_std = bootstrap_threshold_metrics(
         y_te,
-        clf.predict(X_te, verbose=0).flatten(),
-        thresholds=np.array([best_threshold]),
+        clf.predict(X_te, verbose=0).ravel(),
+        thresholds=np.array([best_thr]),
         sample_frac=0.7,
         n_iters=1000,
         rng_seed=42
@@ -1126,16 +1111,16 @@ def run_global_ssl(
     df_boot.to_csv(results_d / "bootstrap_metrics.csv", index=False)
     plot_thresholds(
         y_te,
-        clf.predict(X_te, verbose=0).flatten(),
+        clf.predict(X_te, verbose=0).ravel(),
         str(results_d),
         f"{uid} {fruit}_{scenario} (global_ssl)",
-        thresholds=np.array([best_threshold]),
+        thresholds=np.array([best_thr]),
         sample_frac=0.7,
         n_iters=1000
     )
 
     return df_boot, auc_mean, auc_std
-
+    
 if __name__ == "__main__":
     import warnings
     warnings.filterwarnings("ignore")
