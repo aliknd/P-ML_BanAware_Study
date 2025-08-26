@@ -1,0 +1,2422 @@
+
+==============================
+Sampling method: original
+User:            ID9
+Dataset:         Melon_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +71/-190  → USED +71/-190
+
+USER-LEVEL SAMPLING:
+  ID5: ORIG +9/-65  → USED +9/-65
+  ID9: ORIG +2/-48  → USED +2/-48
+  ID12: ORIG +10/-12  → USED +10/-12
+  ID19: ORIG +6/-19  → USED +6/-19
+  ID20: ORIG +4/-17  → USED +4/-17
+  ID21: ORIG +18/-16  → USED +18/-16
+  ID27: ORIG +22/-13  → USED +22/-13
+
+==============================
+Sampling method: original
+User:            ID9
+Dataset:         Melon_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +71/-190  → USED +71/-190
+
+USER-LEVEL SAMPLING:
+  ID5: ORIG +9/-65  → USED +9/-65
+  ID9: ORIG +2/-48  → USED +2/-48
+  ID12: ORIG +10/-12  → USED +10/-12
+  ID19: ORIG +6/-19  → USED +6/-19
+  ID20: ORIG +4/-17  → USED +4/-17
+  ID21: ORIG +18/-16  → USED +18/-16
+  ID27: ORIG +22/-13  → USED +22/-13
+
+==============================
+Sampling method: original
+User:            ID9
+Dataset:         Melon_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +2/-48  → USED +2/-48
+
+USER-LEVEL SAMPLING:
+  ID9: ORIG +2/-48  → USED +2/-48
+
+==============================
+Sampling method: original
+User:            ID5
+Dataset:         Melon_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +71/-190  → USED +71/-190
+
+USER-LEVEL SAMPLING:
+  ID5: ORIG +9/-65  → USED +9/-65
+  ID9: ORIG +2/-48  → USED +2/-48
+  ID12: ORIG +10/-12  → USED +10/-12
+  ID19: ORIG +6/-19  → USED +6/-19
+  ID20: ORIG +4/-17  → USED +4/-17
+  ID21: ORIG +18/-16  → USED +18/-16
+  ID27: ORIG +22/-13  → USED +22/-13
+
+==============================
+Sampling method: original
+User:            ID5
+Dataset:         Melon_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +71/-190  → USED +71/-190
+
+USER-LEVEL SAMPLING:
+  ID5: ORIG +9/-65  → USED +9/-65
+  ID9: ORIG +2/-48  → USED +2/-48
+  ID12: ORIG +10/-12  → USED +10/-12
+  ID19: ORIG +6/-19  → USED +6/-19
+  ID20: ORIG +4/-17  → USED +4/-17
+  ID21: ORIG +18/-16  → USED +18/-16
+  ID27: ORIG +22/-13  → USED +22/-13
+
+==============================
+Sampling method: original
+User:            ID5
+Dataset:         Melon_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +9/-65  → USED +9/-65
+
+USER-LEVEL SAMPLING:
+  ID5: ORIG +9/-65  → USED +9/-65
+
+==============================
+Sampling method: original
+User:            ID27
+Dataset:         Nectarine_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +165/-190  → USED +165/-190
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +12/-31  → USED +12/-31
+  ID11: ORIG +17/-14  → USED +17/-14
+  ID12: ORIG +7/-7  → USED +7/-7
+  ID13: ORIG +33/-35  → USED +33/-35
+  ID20: ORIG +6/-16  → USED +6/-16
+  ID21: ORIG +42/-45  → USED +42/-45
+  ID27: ORIG +48/-42  → USED +48/-42
+
+==============================
+Sampling method: original
+User:            ID27
+Dataset:         Nectarine_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +165/-190  → USED +165/-190
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +12/-31  → USED +12/-31
+  ID11: ORIG +17/-14  → USED +17/-14
+  ID12: ORIG +7/-7  → USED +7/-7
+  ID13: ORIG +33/-35  → USED +33/-35
+  ID20: ORIG +6/-16  → USED +6/-16
+  ID21: ORIG +42/-45  → USED +42/-45
+  ID27: ORIG +48/-42  → USED +48/-42
+
+==============================
+Sampling method: original
+User:            ID27
+Dataset:         Nectarine_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +48/-42  → USED +48/-42
+
+USER-LEVEL SAMPLING:
+  ID27: ORIG +48/-42  → USED +48/-42
+
+==============================
+Sampling method: original
+User:            ID27
+Dataset:         Melon_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +71/-190  → USED +71/-190
+
+USER-LEVEL SAMPLING:
+  ID5: ORIG +9/-65  → USED +9/-65
+  ID9: ORIG +2/-48  → USED +2/-48
+  ID12: ORIG +10/-12  → USED +10/-12
+  ID19: ORIG +6/-19  → USED +6/-19
+  ID20: ORIG +4/-17  → USED +4/-17
+  ID21: ORIG +18/-16  → USED +18/-16
+  ID27: ORIG +22/-13  → USED +22/-13
+
+==============================
+Sampling method: original
+User:            ID27
+Dataset:         Melon_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +71/-190  → USED +71/-190
+
+USER-LEVEL SAMPLING:
+  ID5: ORIG +9/-65  → USED +9/-65
+  ID9: ORIG +2/-48  → USED +2/-48
+  ID12: ORIG +10/-12  → USED +10/-12
+  ID19: ORIG +6/-19  → USED +6/-19
+  ID20: ORIG +4/-17  → USED +4/-17
+  ID21: ORIG +18/-16  → USED +18/-16
+  ID27: ORIG +22/-13  → USED +22/-13
+
+==============================
+Sampling method: original
+User:            ID27
+Dataset:         Melon_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +22/-13  → USED +22/-13
+
+USER-LEVEL SAMPLING:
+  ID27: ORIG +22/-13  → USED +22/-13
+
+==============================
+Sampling method: original
+User:            ID27
+Dataset:         Nectarine_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +160/-171  → USED +160/-171
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-36  → USED +14/-36
+  ID11: ORIG +2/-2  → USED +2/-2
+  ID12: ORIG +6/-6  → USED +6/-6
+  ID20: ORIG +7/-9  → USED +7/-9
+  ID21: ORIG +111/-108  → USED +111/-108
+  ID27: ORIG +20/-10  → USED +20/-10
+
+==============================
+Sampling method: original
+User:            ID27
+Dataset:         Nectarine_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +160/-171  → USED +160/-171
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-36  → USED +14/-36
+  ID11: ORIG +2/-2  → USED +2/-2
+  ID12: ORIG +6/-6  → USED +6/-6
+  ID20: ORIG +7/-9  → USED +7/-9
+  ID21: ORIG +111/-108  → USED +111/-108
+  ID27: ORIG +20/-10  → USED +20/-10
+
+==============================
+Sampling method: original
+User:            ID27
+Dataset:         Nectarine_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +20/-10  → USED +20/-10
+
+USER-LEVEL SAMPLING:
+  ID27: ORIG +20/-10  → USED +20/-10
+
+==============================
+Sampling method: original
+User:            ID27
+Dataset:         Melon_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +119/-100  → USED +119/-100
+
+USER-LEVEL SAMPLING:
+  ID12: ORIG +31/-34  → USED +31/-34
+  ID19: ORIG +36/-34  → USED +36/-34
+  ID20: ORIG +3/-13  → USED +3/-13
+  ID27: ORIG +49/-19  → USED +49/-19
+
+==============================
+Sampling method: original
+User:            ID27
+Dataset:         Melon_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +119/-100  → USED +119/-100
+
+USER-LEVEL SAMPLING:
+  ID12: ORIG +31/-34  → USED +31/-34
+  ID19: ORIG +36/-34  → USED +36/-34
+  ID20: ORIG +3/-13  → USED +3/-13
+  ID27: ORIG +49/-19  → USED +49/-19
+
+==============================
+Sampling method: original
+User:            ID27
+Dataset:         Melon_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +49/-19  → USED +49/-19
+
+USER-LEVEL SAMPLING:
+  ID27: ORIG +49/-19  → USED +49/-19
+
+==============================
+Sampling method: original
+User:            ID19
+Dataset:         Almond_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +12/-85  → USED +12/-85
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +4/-3  → USED +4/-3
+  ID19: ORIG +6/-23  → USED +6/-23
+  ID25: ORIG +2/-59  → USED +2/-59
+
+==============================
+Sampling method: original
+User:            ID19
+Dataset:         Almond_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +12/-85  → USED +12/-85
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +4/-3  → USED +4/-3
+  ID19: ORIG +6/-23  → USED +6/-23
+  ID25: ORIG +2/-59  → USED +2/-59
+
+==============================
+Sampling method: original
+User:            ID19
+Dataset:         Almond_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +6/-23  → USED +6/-23
+
+USER-LEVEL SAMPLING:
+  ID19: ORIG +6/-23  → USED +6/-23
+
+==============================
+Sampling method: original
+User:            ID19
+Dataset:         Melon_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +71/-190  → USED +71/-190
+
+USER-LEVEL SAMPLING:
+  ID5: ORIG +9/-65  → USED +9/-65
+  ID9: ORIG +2/-48  → USED +2/-48
+  ID12: ORIG +10/-12  → USED +10/-12
+  ID19: ORIG +6/-19  → USED +6/-19
+  ID20: ORIG +4/-17  → USED +4/-17
+  ID21: ORIG +18/-16  → USED +18/-16
+  ID27: ORIG +22/-13  → USED +22/-13
+
+==============================
+Sampling method: original
+User:            ID19
+Dataset:         Melon_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +71/-190  → USED +71/-190
+
+USER-LEVEL SAMPLING:
+  ID5: ORIG +9/-65  → USED +9/-65
+  ID9: ORIG +2/-48  → USED +2/-48
+  ID12: ORIG +10/-12  → USED +10/-12
+  ID19: ORIG +6/-19  → USED +6/-19
+  ID20: ORIG +4/-17  → USED +4/-17
+  ID21: ORIG +18/-16  → USED +18/-16
+  ID27: ORIG +22/-13  → USED +22/-13
+
+==============================
+Sampling method: original
+User:            ID19
+Dataset:         Melon_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +6/-19  → USED +6/-19
+
+USER-LEVEL SAMPLING:
+  ID19: ORIG +6/-19  → USED +6/-19
+
+==============================
+Sampling method: original
+User:            ID19
+Dataset:         Melon_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +119/-100  → USED +119/-100
+
+USER-LEVEL SAMPLING:
+  ID12: ORIG +31/-34  → USED +31/-34
+  ID19: ORIG +36/-34  → USED +36/-34
+  ID20: ORIG +3/-13  → USED +3/-13
+  ID27: ORIG +49/-19  → USED +49/-19
+
+==============================
+Sampling method: original
+User:            ID19
+Dataset:         Melon_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +119/-100  → USED +119/-100
+
+USER-LEVEL SAMPLING:
+  ID12: ORIG +31/-34  → USED +31/-34
+  ID19: ORIG +36/-34  → USED +36/-34
+  ID20: ORIG +3/-13  → USED +3/-13
+  ID27: ORIG +49/-19  → USED +49/-19
+
+==============================
+Sampling method: original
+User:            ID19
+Dataset:         Melon_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +36/-34  → USED +36/-34
+
+USER-LEVEL SAMPLING:
+  ID19: ORIG +36/-34  → USED +36/-34
+
+==============================
+Sampling method: original
+User:            ID19
+Dataset:         Almond_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +36/-115  → USED +36/-115
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +4/-5  → USED +4/-5
+  ID13: ORIG +14/-25  → USED +14/-25
+  ID19: ORIG +5/-28  → USED +5/-28
+  ID25: ORIG +4/-49  → USED +4/-49
+  ID28: ORIG +9/-8  → USED +9/-8
+
+==============================
+Sampling method: original
+User:            ID19
+Dataset:         Almond_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +36/-115  → USED +36/-115
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +4/-5  → USED +4/-5
+  ID13: ORIG +14/-25  → USED +14/-25
+  ID19: ORIG +5/-28  → USED +5/-28
+  ID25: ORIG +4/-49  → USED +4/-49
+  ID28: ORIG +9/-8  → USED +9/-8
+
+==============================
+Sampling method: original
+User:            ID19
+Dataset:         Almond_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +5/-28  → USED +5/-28
+
+USER-LEVEL SAMPLING:
+  ID19: ORIG +5/-28  → USED +5/-28
+
+==============================
+Sampling method: original
+User:            ID15
+Dataset:         Carrot_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +76/-145  → USED +76/-145
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +11/-37  → USED +11/-37
+  ID11: ORIG +9/-8  → USED +9/-8
+  ID14: ORIG +11/-12  → USED +11/-12
+  ID15: ORIG +25/-23  → USED +25/-23
+  ID18: ORIG +16/-18  → USED +16/-18
+  ID25: ORIG +4/-47  → USED +4/-47
+
+==============================
+Sampling method: original
+User:            ID15
+Dataset:         Carrot_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +76/-145  → USED +76/-145
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +11/-37  → USED +11/-37
+  ID11: ORIG +9/-8  → USED +9/-8
+  ID14: ORIG +11/-12  → USED +11/-12
+  ID15: ORIG +25/-23  → USED +25/-23
+  ID18: ORIG +16/-18  → USED +16/-18
+  ID25: ORIG +4/-47  → USED +4/-47
+
+==============================
+Sampling method: original
+User:            ID15
+Dataset:         Carrot_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +25/-23  → USED +25/-23
+
+USER-LEVEL SAMPLING:
+  ID15: ORIG +25/-23  → USED +25/-23
+
+==============================
+Sampling method: original
+User:            ID15
+Dataset:         Carrot_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +113/-230  → USED +113/-230
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-34  → USED +14/-34
+  ID11: ORIG +4/-6  → USED +4/-6
+  ID13: ORIG +2/-36  → USED +2/-36
+  ID14: ORIG +36/-38  → USED +36/-38
+  ID15: ORIG +32/-32  → USED +32/-32
+  ID18: ORIG +20/-28  → USED +20/-28
+  ID26: ORIG +5/-56  → USED +5/-56
+
+==============================
+Sampling method: original
+User:            ID15
+Dataset:         Carrot_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +113/-230  → USED +113/-230
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-34  → USED +14/-34
+  ID11: ORIG +4/-6  → USED +4/-6
+  ID13: ORIG +2/-36  → USED +2/-36
+  ID14: ORIG +36/-38  → USED +36/-38
+  ID15: ORIG +32/-32  → USED +32/-32
+  ID18: ORIG +20/-28  → USED +20/-28
+  ID26: ORIG +5/-56  → USED +5/-56
+
+==============================
+Sampling method: original
+User:            ID15
+Dataset:         Carrot_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +32/-32  → USED +32/-32
+
+USER-LEVEL SAMPLING:
+  ID15: ORIG +32/-32  → USED +32/-32
+
+==============================
+Sampling method: original
+User:            ID28
+Dataset:         Coffee_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +12/-18  → USED +12/-18
+
+USER-LEVEL SAMPLING:
+  ID28: ORIG +12/-18  → USED +12/-18
+
+==============================
+Sampling method: original
+User:            ID28
+Dataset:         Coffee_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +12/-18  → USED +12/-18
+
+USER-LEVEL SAMPLING:
+  ID28: ORIG +12/-18  → USED +12/-18
+
+==============================
+Sampling method: original
+User:            ID28
+Dataset:         Coffee_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +12/-18  → USED +12/-18
+
+USER-LEVEL SAMPLING:
+  ID28: ORIG +12/-18  → USED +12/-18
+
+==============================
+Sampling method: original
+User:            ID28
+Dataset:         Almond_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +36/-115  → USED +36/-115
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +4/-5  → USED +4/-5
+  ID13: ORIG +14/-25  → USED +14/-25
+  ID19: ORIG +5/-28  → USED +5/-28
+  ID25: ORIG +4/-49  → USED +4/-49
+  ID28: ORIG +9/-8  → USED +9/-8
+
+==============================
+Sampling method: original
+User:            ID28
+Dataset:         Almond_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +36/-115  → USED +36/-115
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +4/-5  → USED +4/-5
+  ID13: ORIG +14/-25  → USED +14/-25
+  ID19: ORIG +5/-28  → USED +5/-28
+  ID25: ORIG +4/-49  → USED +4/-49
+  ID28: ORIG +9/-8  → USED +9/-8
+
+==============================
+Sampling method: original
+User:            ID28
+Dataset:         Almond_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +9/-8  → USED +9/-8
+
+USER-LEVEL SAMPLING:
+  ID28: ORIG +9/-8  → USED +9/-8
+
+==============================
+Sampling method: original
+User:            ID10
+Dataset:         Nectarine_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +165/-190  → USED +165/-190
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +12/-31  → USED +12/-31
+  ID11: ORIG +17/-14  → USED +17/-14
+  ID12: ORIG +7/-7  → USED +7/-7
+  ID13: ORIG +33/-35  → USED +33/-35
+  ID20: ORIG +6/-16  → USED +6/-16
+  ID21: ORIG +42/-45  → USED +42/-45
+  ID27: ORIG +48/-42  → USED +48/-42
+
+==============================
+Sampling method: original
+User:            ID10
+Dataset:         Nectarine_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +165/-190  → USED +165/-190
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +12/-31  → USED +12/-31
+  ID11: ORIG +17/-14  → USED +17/-14
+  ID12: ORIG +7/-7  → USED +7/-7
+  ID13: ORIG +33/-35  → USED +33/-35
+  ID20: ORIG +6/-16  → USED +6/-16
+  ID21: ORIG +42/-45  → USED +42/-45
+  ID27: ORIG +48/-42  → USED +48/-42
+
+==============================
+Sampling method: original
+User:            ID10
+Dataset:         Nectarine_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +12/-31  → USED +12/-31
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +12/-31  → USED +12/-31
+
+==============================
+Sampling method: original
+User:            ID10
+Dataset:         Carrot_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +76/-145  → USED +76/-145
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +11/-37  → USED +11/-37
+  ID11: ORIG +9/-8  → USED +9/-8
+  ID14: ORIG +11/-12  → USED +11/-12
+  ID15: ORIG +25/-23  → USED +25/-23
+  ID18: ORIG +16/-18  → USED +16/-18
+  ID25: ORIG +4/-47  → USED +4/-47
+
+==============================
+Sampling method: original
+User:            ID10
+Dataset:         Carrot_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +76/-145  → USED +76/-145
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +11/-37  → USED +11/-37
+  ID11: ORIG +9/-8  → USED +9/-8
+  ID14: ORIG +11/-12  → USED +11/-12
+  ID15: ORIG +25/-23  → USED +25/-23
+  ID18: ORIG +16/-18  → USED +16/-18
+  ID25: ORIG +4/-47  → USED +4/-47
+
+==============================
+Sampling method: original
+User:            ID10
+Dataset:         Carrot_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +11/-37  → USED +11/-37
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +11/-37  → USED +11/-37
+
+==============================
+Sampling method: original
+User:            ID10
+Dataset:         Nectarine_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +160/-171  → USED +160/-171
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-36  → USED +14/-36
+  ID11: ORIG +2/-2  → USED +2/-2
+  ID12: ORIG +6/-6  → USED +6/-6
+  ID20: ORIG +7/-9  → USED +7/-9
+  ID21: ORIG +111/-108  → USED +111/-108
+  ID27: ORIG +20/-10  → USED +20/-10
+
+==============================
+Sampling method: original
+User:            ID10
+Dataset:         Nectarine_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +160/-171  → USED +160/-171
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-36  → USED +14/-36
+  ID11: ORIG +2/-2  → USED +2/-2
+  ID12: ORIG +6/-6  → USED +6/-6
+  ID20: ORIG +7/-9  → USED +7/-9
+  ID21: ORIG +111/-108  → USED +111/-108
+  ID27: ORIG +20/-10  → USED +20/-10
+
+==============================
+Sampling method: original
+User:            ID10
+Dataset:         Nectarine_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +14/-36  → USED +14/-36
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-36  → USED +14/-36
+
+==============================
+Sampling method: original
+User:            ID10
+Dataset:         Carrot_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +113/-230  → USED +113/-230
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-34  → USED +14/-34
+  ID11: ORIG +4/-6  → USED +4/-6
+  ID13: ORIG +2/-36  → USED +2/-36
+  ID14: ORIG +36/-38  → USED +36/-38
+  ID15: ORIG +32/-32  → USED +32/-32
+  ID18: ORIG +20/-28  → USED +20/-28
+  ID26: ORIG +5/-56  → USED +5/-56
+
+==============================
+Sampling method: original
+User:            ID10
+Dataset:         Carrot_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +113/-230  → USED +113/-230
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-34  → USED +14/-34
+  ID11: ORIG +4/-6  → USED +4/-6
+  ID13: ORIG +2/-36  → USED +2/-36
+  ID14: ORIG +36/-38  → USED +36/-38
+  ID15: ORIG +32/-32  → USED +32/-32
+  ID18: ORIG +20/-28  → USED +20/-28
+  ID26: ORIG +5/-56  → USED +5/-56
+
+==============================
+Sampling method: original
+User:            ID10
+Dataset:         Carrot_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +14/-34  → USED +14/-34
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-34  → USED +14/-34
+
+==============================
+Sampling method: original
+User:            ID13
+Dataset:         Nectarine_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +165/-190  → USED +165/-190
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +12/-31  → USED +12/-31
+  ID11: ORIG +17/-14  → USED +17/-14
+  ID12: ORIG +7/-7  → USED +7/-7
+  ID13: ORIG +33/-35  → USED +33/-35
+  ID20: ORIG +6/-16  → USED +6/-16
+  ID21: ORIG +42/-45  → USED +42/-45
+  ID27: ORIG +48/-42  → USED +48/-42
+
+==============================
+Sampling method: original
+User:            ID13
+Dataset:         Nectarine_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +165/-190  → USED +165/-190
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +12/-31  → USED +12/-31
+  ID11: ORIG +17/-14  → USED +17/-14
+  ID12: ORIG +7/-7  → USED +7/-7
+  ID13: ORIG +33/-35  → USED +33/-35
+  ID20: ORIG +6/-16  → USED +6/-16
+  ID21: ORIG +42/-45  → USED +42/-45
+  ID27: ORIG +48/-42  → USED +48/-42
+
+==============================
+Sampling method: original
+User:            ID13
+Dataset:         Nectarine_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +33/-35  → USED +33/-35
+
+USER-LEVEL SAMPLING:
+  ID13: ORIG +33/-35  → USED +33/-35
+
+==============================
+Sampling method: original
+User:            ID13
+Dataset:         Almond_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +36/-115  → USED +36/-115
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +4/-5  → USED +4/-5
+  ID13: ORIG +14/-25  → USED +14/-25
+  ID19: ORIG +5/-28  → USED +5/-28
+  ID25: ORIG +4/-49  → USED +4/-49
+  ID28: ORIG +9/-8  → USED +9/-8
+
+==============================
+Sampling method: original
+User:            ID13
+Dataset:         Almond_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +36/-115  → USED +36/-115
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +4/-5  → USED +4/-5
+  ID13: ORIG +14/-25  → USED +14/-25
+  ID19: ORIG +5/-28  → USED +5/-28
+  ID25: ORIG +4/-49  → USED +4/-49
+  ID28: ORIG +9/-8  → USED +9/-8
+
+==============================
+Sampling method: original
+User:            ID13
+Dataset:         Almond_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +14/-25  → USED +14/-25
+
+USER-LEVEL SAMPLING:
+  ID13: ORIG +14/-25  → USED +14/-25
+
+==============================
+Sampling method: original
+User:            ID13
+Dataset:         Carrot_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +113/-230  → USED +113/-230
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-34  → USED +14/-34
+  ID11: ORIG +4/-6  → USED +4/-6
+  ID13: ORIG +2/-36  → USED +2/-36
+  ID14: ORIG +36/-38  → USED +36/-38
+  ID15: ORIG +32/-32  → USED +32/-32
+  ID18: ORIG +20/-28  → USED +20/-28
+  ID26: ORIG +5/-56  → USED +5/-56
+
+==============================
+Sampling method: original
+User:            ID13
+Dataset:         Carrot_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +113/-230  → USED +113/-230
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-34  → USED +14/-34
+  ID11: ORIG +4/-6  → USED +4/-6
+  ID13: ORIG +2/-36  → USED +2/-36
+  ID14: ORIG +36/-38  → USED +36/-38
+  ID15: ORIG +32/-32  → USED +32/-32
+  ID18: ORIG +20/-28  → USED +20/-28
+  ID26: ORIG +5/-56  → USED +5/-56
+
+==============================
+Sampling method: original
+User:            ID13
+Dataset:         Carrot_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +2/-36  → USED +2/-36
+
+USER-LEVEL SAMPLING:
+  ID13: ORIG +2/-36  → USED +2/-36
+
+==============================
+Sampling method: original
+User:            ID14
+Dataset:         Carrot_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +76/-145  → USED +76/-145
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +11/-37  → USED +11/-37
+  ID11: ORIG +9/-8  → USED +9/-8
+  ID14: ORIG +11/-12  → USED +11/-12
+  ID15: ORIG +25/-23  → USED +25/-23
+  ID18: ORIG +16/-18  → USED +16/-18
+  ID25: ORIG +4/-47  → USED +4/-47
+
+==============================
+Sampling method: original
+User:            ID14
+Dataset:         Carrot_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +76/-145  → USED +76/-145
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +11/-37  → USED +11/-37
+  ID11: ORIG +9/-8  → USED +9/-8
+  ID14: ORIG +11/-12  → USED +11/-12
+  ID15: ORIG +25/-23  → USED +25/-23
+  ID18: ORIG +16/-18  → USED +16/-18
+  ID25: ORIG +4/-47  → USED +4/-47
+
+==============================
+Sampling method: original
+User:            ID14
+Dataset:         Carrot_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +11/-12  → USED +11/-12
+
+USER-LEVEL SAMPLING:
+  ID14: ORIG +11/-12  → USED +11/-12
+
+==============================
+Sampling method: original
+User:            ID14
+Dataset:         Carrot_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +113/-230  → USED +113/-230
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-34  → USED +14/-34
+  ID11: ORIG +4/-6  → USED +4/-6
+  ID13: ORIG +2/-36  → USED +2/-36
+  ID14: ORIG +36/-38  → USED +36/-38
+  ID15: ORIG +32/-32  → USED +32/-32
+  ID18: ORIG +20/-28  → USED +20/-28
+  ID26: ORIG +5/-56  → USED +5/-56
+
+==============================
+Sampling method: original
+User:            ID14
+Dataset:         Carrot_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +113/-230  → USED +113/-230
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-34  → USED +14/-34
+  ID11: ORIG +4/-6  → USED +4/-6
+  ID13: ORIG +2/-36  → USED +2/-36
+  ID14: ORIG +36/-38  → USED +36/-38
+  ID15: ORIG +32/-32  → USED +32/-32
+  ID18: ORIG +20/-28  → USED +20/-28
+  ID26: ORIG +5/-56  → USED +5/-56
+
+==============================
+Sampling method: original
+User:            ID14
+Dataset:         Carrot_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +36/-38  → USED +36/-38
+
+USER-LEVEL SAMPLING:
+  ID14: ORIG +36/-38  → USED +36/-38
+
+==============================
+Sampling method: original
+User:            ID26
+Dataset:         Carrot_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +113/-230  → USED +113/-230
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-34  → USED +14/-34
+  ID11: ORIG +4/-6  → USED +4/-6
+  ID13: ORIG +2/-36  → USED +2/-36
+  ID14: ORIG +36/-38  → USED +36/-38
+  ID15: ORIG +32/-32  → USED +32/-32
+  ID18: ORIG +20/-28  → USED +20/-28
+  ID26: ORIG +5/-56  → USED +5/-56
+
+==============================
+Sampling method: original
+User:            ID26
+Dataset:         Carrot_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +113/-230  → USED +113/-230
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-34  → USED +14/-34
+  ID11: ORIG +4/-6  → USED +4/-6
+  ID13: ORIG +2/-36  → USED +2/-36
+  ID14: ORIG +36/-38  → USED +36/-38
+  ID15: ORIG +32/-32  → USED +32/-32
+  ID18: ORIG +20/-28  → USED +20/-28
+  ID26: ORIG +5/-56  → USED +5/-56
+
+==============================
+Sampling method: original
+User:            ID26
+Dataset:         Carrot_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +5/-56  → USED +5/-56
+
+USER-LEVEL SAMPLING:
+  ID26: ORIG +5/-56  → USED +5/-56
+
+==============================
+Sampling method: original
+User:            ID18
+Dataset:         Carrot_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +76/-145  → USED +76/-145
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +11/-37  → USED +11/-37
+  ID11: ORIG +9/-8  → USED +9/-8
+  ID14: ORIG +11/-12  → USED +11/-12
+  ID15: ORIG +25/-23  → USED +25/-23
+  ID18: ORIG +16/-18  → USED +16/-18
+  ID25: ORIG +4/-47  → USED +4/-47
+
+==============================
+Sampling method: original
+User:            ID18
+Dataset:         Carrot_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +76/-145  → USED +76/-145
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +11/-37  → USED +11/-37
+  ID11: ORIG +9/-8  → USED +9/-8
+  ID14: ORIG +11/-12  → USED +11/-12
+  ID15: ORIG +25/-23  → USED +25/-23
+  ID18: ORIG +16/-18  → USED +16/-18
+  ID25: ORIG +4/-47  → USED +4/-47
+
+==============================
+Sampling method: original
+User:            ID18
+Dataset:         Carrot_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +16/-18  → USED +16/-18
+
+USER-LEVEL SAMPLING:
+  ID18: ORIG +16/-18  → USED +16/-18
+
+==============================
+Sampling method: original
+User:            ID18
+Dataset:         Carrot_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +113/-230  → USED +113/-230
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-34  → USED +14/-34
+  ID11: ORIG +4/-6  → USED +4/-6
+  ID13: ORIG +2/-36  → USED +2/-36
+  ID14: ORIG +36/-38  → USED +36/-38
+  ID15: ORIG +32/-32  → USED +32/-32
+  ID18: ORIG +20/-28  → USED +20/-28
+  ID26: ORIG +5/-56  → USED +5/-56
+
+==============================
+Sampling method: original
+User:            ID18
+Dataset:         Carrot_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +113/-230  → USED +113/-230
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-34  → USED +14/-34
+  ID11: ORIG +4/-6  → USED +4/-6
+  ID13: ORIG +2/-36  → USED +2/-36
+  ID14: ORIG +36/-38  → USED +36/-38
+  ID15: ORIG +32/-32  → USED +32/-32
+  ID18: ORIG +20/-28  → USED +20/-28
+  ID26: ORIG +5/-56  → USED +5/-56
+
+==============================
+Sampling method: original
+User:            ID18
+Dataset:         Carrot_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +20/-28  → USED +20/-28
+
+USER-LEVEL SAMPLING:
+  ID18: ORIG +20/-28  → USED +20/-28
+
+==============================
+Sampling method: original
+User:            ID11
+Dataset:         Nectarine_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +165/-190  → USED +165/-190
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +12/-31  → USED +12/-31
+  ID11: ORIG +17/-14  → USED +17/-14
+  ID12: ORIG +7/-7  → USED +7/-7
+  ID13: ORIG +33/-35  → USED +33/-35
+  ID20: ORIG +6/-16  → USED +6/-16
+  ID21: ORIG +42/-45  → USED +42/-45
+  ID27: ORIG +48/-42  → USED +48/-42
+
+==============================
+Sampling method: original
+User:            ID11
+Dataset:         Nectarine_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +165/-190  → USED +165/-190
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +12/-31  → USED +12/-31
+  ID11: ORIG +17/-14  → USED +17/-14
+  ID12: ORIG +7/-7  → USED +7/-7
+  ID13: ORIG +33/-35  → USED +33/-35
+  ID20: ORIG +6/-16  → USED +6/-16
+  ID21: ORIG +42/-45  → USED +42/-45
+  ID27: ORIG +48/-42  → USED +48/-42
+
+==============================
+Sampling method: original
+User:            ID11
+Dataset:         Nectarine_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +17/-14  → USED +17/-14
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +17/-14  → USED +17/-14
+
+==============================
+Sampling method: original
+User:            ID11
+Dataset:         Carrot_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +76/-145  → USED +76/-145
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +11/-37  → USED +11/-37
+  ID11: ORIG +9/-8  → USED +9/-8
+  ID14: ORIG +11/-12  → USED +11/-12
+  ID15: ORIG +25/-23  → USED +25/-23
+  ID18: ORIG +16/-18  → USED +16/-18
+  ID25: ORIG +4/-47  → USED +4/-47
+
+==============================
+Sampling method: original
+User:            ID11
+Dataset:         Carrot_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +76/-145  → USED +76/-145
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +11/-37  → USED +11/-37
+  ID11: ORIG +9/-8  → USED +9/-8
+  ID14: ORIG +11/-12  → USED +11/-12
+  ID15: ORIG +25/-23  → USED +25/-23
+  ID18: ORIG +16/-18  → USED +16/-18
+  ID25: ORIG +4/-47  → USED +4/-47
+
+==============================
+Sampling method: original
+User:            ID11
+Dataset:         Carrot_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +9/-8  → USED +9/-8
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +9/-8  → USED +9/-8
+
+==============================
+Sampling method: original
+User:            ID11
+Dataset:         Almond_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +12/-85  → USED +12/-85
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +4/-3  → USED +4/-3
+  ID19: ORIG +6/-23  → USED +6/-23
+  ID25: ORIG +2/-59  → USED +2/-59
+
+==============================
+Sampling method: original
+User:            ID11
+Dataset:         Almond_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +12/-85  → USED +12/-85
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +4/-3  → USED +4/-3
+  ID19: ORIG +6/-23  → USED +6/-23
+  ID25: ORIG +2/-59  → USED +2/-59
+
+==============================
+Sampling method: original
+User:            ID11
+Dataset:         Almond_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +4/-3  → USED +4/-3
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +4/-3  → USED +4/-3
+
+==============================
+Sampling method: original
+User:            ID11
+Dataset:         Nectarine_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +160/-171  → USED +160/-171
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-36  → USED +14/-36
+  ID11: ORIG +2/-2  → USED +2/-2
+  ID12: ORIG +6/-6  → USED +6/-6
+  ID20: ORIG +7/-9  → USED +7/-9
+  ID21: ORIG +111/-108  → USED +111/-108
+  ID27: ORIG +20/-10  → USED +20/-10
+
+==============================
+Sampling method: original
+User:            ID11
+Dataset:         Nectarine_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +160/-171  → USED +160/-171
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-36  → USED +14/-36
+  ID11: ORIG +2/-2  → USED +2/-2
+  ID12: ORIG +6/-6  → USED +6/-6
+  ID20: ORIG +7/-9  → USED +7/-9
+  ID21: ORIG +111/-108  → USED +111/-108
+  ID27: ORIG +20/-10  → USED +20/-10
+
+==============================
+Sampling method: original
+User:            ID11
+Dataset:         Nectarine_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +2/-2  → USED +2/-2
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +2/-2  → USED +2/-2
+
+==============================
+Sampling method: original
+User:            ID11
+Dataset:         Almond_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +36/-115  → USED +36/-115
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +4/-5  → USED +4/-5
+  ID13: ORIG +14/-25  → USED +14/-25
+  ID19: ORIG +5/-28  → USED +5/-28
+  ID25: ORIG +4/-49  → USED +4/-49
+  ID28: ORIG +9/-8  → USED +9/-8
+
+==============================
+Sampling method: original
+User:            ID11
+Dataset:         Almond_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +36/-115  → USED +36/-115
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +4/-5  → USED +4/-5
+  ID13: ORIG +14/-25  → USED +14/-25
+  ID19: ORIG +5/-28  → USED +5/-28
+  ID25: ORIG +4/-49  → USED +4/-49
+  ID28: ORIG +9/-8  → USED +9/-8
+
+==============================
+Sampling method: original
+User:            ID11
+Dataset:         Almond_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +4/-5  → USED +4/-5
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +4/-5  → USED +4/-5
+
+==============================
+Sampling method: original
+User:            ID11
+Dataset:         Carrot_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +113/-230  → USED +113/-230
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-34  → USED +14/-34
+  ID11: ORIG +4/-6  → USED +4/-6
+  ID13: ORIG +2/-36  → USED +2/-36
+  ID14: ORIG +36/-38  → USED +36/-38
+  ID15: ORIG +32/-32  → USED +32/-32
+  ID18: ORIG +20/-28  → USED +20/-28
+  ID26: ORIG +5/-56  → USED +5/-56
+
+==============================
+Sampling method: original
+User:            ID11
+Dataset:         Carrot_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +113/-230  → USED +113/-230
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-34  → USED +14/-34
+  ID11: ORIG +4/-6  → USED +4/-6
+  ID13: ORIG +2/-36  → USED +2/-36
+  ID14: ORIG +36/-38  → USED +36/-38
+  ID15: ORIG +32/-32  → USED +32/-32
+  ID18: ORIG +20/-28  → USED +20/-28
+  ID26: ORIG +5/-56  → USED +5/-56
+
+==============================
+Sampling method: original
+User:            ID11
+Dataset:         Carrot_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +4/-6  → USED +4/-6
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +4/-6  → USED +4/-6
+
+==============================
+Sampling method: original
+User:            ID12
+Dataset:         Nectarine_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +165/-190  → USED +165/-190
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +12/-31  → USED +12/-31
+  ID11: ORIG +17/-14  → USED +17/-14
+  ID12: ORIG +7/-7  → USED +7/-7
+  ID13: ORIG +33/-35  → USED +33/-35
+  ID20: ORIG +6/-16  → USED +6/-16
+  ID21: ORIG +42/-45  → USED +42/-45
+  ID27: ORIG +48/-42  → USED +48/-42
+
+==============================
+Sampling method: original
+User:            ID12
+Dataset:         Nectarine_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +165/-190  → USED +165/-190
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +12/-31  → USED +12/-31
+  ID11: ORIG +17/-14  → USED +17/-14
+  ID12: ORIG +7/-7  → USED +7/-7
+  ID13: ORIG +33/-35  → USED +33/-35
+  ID20: ORIG +6/-16  → USED +6/-16
+  ID21: ORIG +42/-45  → USED +42/-45
+  ID27: ORIG +48/-42  → USED +48/-42
+
+==============================
+Sampling method: original
+User:            ID12
+Dataset:         Nectarine_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +7/-7  → USED +7/-7
+
+USER-LEVEL SAMPLING:
+  ID12: ORIG +7/-7  → USED +7/-7
+
+==============================
+Sampling method: original
+User:            ID12
+Dataset:         Melon_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +71/-190  → USED +71/-190
+
+USER-LEVEL SAMPLING:
+  ID5: ORIG +9/-65  → USED +9/-65
+  ID9: ORIG +2/-48  → USED +2/-48
+  ID12: ORIG +10/-12  → USED +10/-12
+  ID19: ORIG +6/-19  → USED +6/-19
+  ID20: ORIG +4/-17  → USED +4/-17
+  ID21: ORIG +18/-16  → USED +18/-16
+  ID27: ORIG +22/-13  → USED +22/-13
+
+==============================
+Sampling method: original
+User:            ID12
+Dataset:         Melon_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +71/-190  → USED +71/-190
+
+USER-LEVEL SAMPLING:
+  ID5: ORIG +9/-65  → USED +9/-65
+  ID9: ORIG +2/-48  → USED +2/-48
+  ID12: ORIG +10/-12  → USED +10/-12
+  ID19: ORIG +6/-19  → USED +6/-19
+  ID20: ORIG +4/-17  → USED +4/-17
+  ID21: ORIG +18/-16  → USED +18/-16
+  ID27: ORIG +22/-13  → USED +22/-13
+
+==============================
+Sampling method: original
+User:            ID12
+Dataset:         Melon_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +10/-12  → USED +10/-12
+
+USER-LEVEL SAMPLING:
+  ID12: ORIG +10/-12  → USED +10/-12
+
+==============================
+Sampling method: original
+User:            ID12
+Dataset:         Nectarine_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +160/-171  → USED +160/-171
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-36  → USED +14/-36
+  ID11: ORIG +2/-2  → USED +2/-2
+  ID12: ORIG +6/-6  → USED +6/-6
+  ID20: ORIG +7/-9  → USED +7/-9
+  ID21: ORIG +111/-108  → USED +111/-108
+  ID27: ORIG +20/-10  → USED +20/-10
+
+==============================
+Sampling method: original
+User:            ID12
+Dataset:         Nectarine_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +160/-171  → USED +160/-171
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-36  → USED +14/-36
+  ID11: ORIG +2/-2  → USED +2/-2
+  ID12: ORIG +6/-6  → USED +6/-6
+  ID20: ORIG +7/-9  → USED +7/-9
+  ID21: ORIG +111/-108  → USED +111/-108
+  ID27: ORIG +20/-10  → USED +20/-10
+
+==============================
+Sampling method: original
+User:            ID12
+Dataset:         Nectarine_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +6/-6  → USED +6/-6
+
+USER-LEVEL SAMPLING:
+  ID12: ORIG +6/-6  → USED +6/-6
+
+==============================
+Sampling method: original
+User:            ID12
+Dataset:         Melon_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +119/-100  → USED +119/-100
+
+USER-LEVEL SAMPLING:
+  ID12: ORIG +31/-34  → USED +31/-34
+  ID19: ORIG +36/-34  → USED +36/-34
+  ID20: ORIG +3/-13  → USED +3/-13
+  ID27: ORIG +49/-19  → USED +49/-19
+
+==============================
+Sampling method: original
+User:            ID12
+Dataset:         Melon_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +119/-100  → USED +119/-100
+
+USER-LEVEL SAMPLING:
+  ID12: ORIG +31/-34  → USED +31/-34
+  ID19: ORIG +36/-34  → USED +36/-34
+  ID20: ORIG +3/-13  → USED +3/-13
+  ID27: ORIG +49/-19  → USED +49/-19
+
+==============================
+Sampling method: original
+User:            ID12
+Dataset:         Melon_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +31/-34  → USED +31/-34
+
+USER-LEVEL SAMPLING:
+  ID12: ORIG +31/-34  → USED +31/-34
+
+==============================
+Sampling method: original
+User:            ID12
+Dataset:         GHB_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +4/-6  → USED +4/-6
+
+USER-LEVEL SAMPLING:
+  ID12: ORIG +4/-6  → USED +4/-6
+
+==============================
+Sampling method: original
+User:            ID12
+Dataset:         GHB_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +4/-6  → USED +4/-6
+
+USER-LEVEL SAMPLING:
+  ID12: ORIG +4/-6  → USED +4/-6
+
+==============================
+Sampling method: original
+User:            ID12
+Dataset:         GHB_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +4/-6  → USED +4/-6
+
+USER-LEVEL SAMPLING:
+  ID12: ORIG +4/-6  → USED +4/-6
+
+==============================
+Sampling method: original
+User:            ID21
+Dataset:         Nectarine_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +165/-190  → USED +165/-190
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +12/-31  → USED +12/-31
+  ID11: ORIG +17/-14  → USED +17/-14
+  ID12: ORIG +7/-7  → USED +7/-7
+  ID13: ORIG +33/-35  → USED +33/-35
+  ID20: ORIG +6/-16  → USED +6/-16
+  ID21: ORIG +42/-45  → USED +42/-45
+  ID27: ORIG +48/-42  → USED +48/-42
+
+==============================
+Sampling method: original
+User:            ID21
+Dataset:         Nectarine_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +165/-190  → USED +165/-190
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +12/-31  → USED +12/-31
+  ID11: ORIG +17/-14  → USED +17/-14
+  ID12: ORIG +7/-7  → USED +7/-7
+  ID13: ORIG +33/-35  → USED +33/-35
+  ID20: ORIG +6/-16  → USED +6/-16
+  ID21: ORIG +42/-45  → USED +42/-45
+  ID27: ORIG +48/-42  → USED +48/-42
+
+==============================
+Sampling method: original
+User:            ID21
+Dataset:         Nectarine_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +42/-45  → USED +42/-45
+
+USER-LEVEL SAMPLING:
+  ID21: ORIG +42/-45  → USED +42/-45
+
+==============================
+Sampling method: original
+User:            ID21
+Dataset:         Melon_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +71/-190  → USED +71/-190
+
+USER-LEVEL SAMPLING:
+  ID5: ORIG +9/-65  → USED +9/-65
+  ID9: ORIG +2/-48  → USED +2/-48
+  ID12: ORIG +10/-12  → USED +10/-12
+  ID19: ORIG +6/-19  → USED +6/-19
+  ID20: ORIG +4/-17  → USED +4/-17
+  ID21: ORIG +18/-16  → USED +18/-16
+  ID27: ORIG +22/-13  → USED +22/-13
+
+==============================
+Sampling method: original
+User:            ID21
+Dataset:         Melon_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +71/-190  → USED +71/-190
+
+USER-LEVEL SAMPLING:
+  ID5: ORIG +9/-65  → USED +9/-65
+  ID9: ORIG +2/-48  → USED +2/-48
+  ID12: ORIG +10/-12  → USED +10/-12
+  ID19: ORIG +6/-19  → USED +6/-19
+  ID20: ORIG +4/-17  → USED +4/-17
+  ID21: ORIG +18/-16  → USED +18/-16
+  ID27: ORIG +22/-13  → USED +22/-13
+
+==============================
+Sampling method: original
+User:            ID21
+Dataset:         Melon_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +18/-16  → USED +18/-16
+
+USER-LEVEL SAMPLING:
+  ID21: ORIG +18/-16  → USED +18/-16
+
+==============================
+Sampling method: original
+User:            ID21
+Dataset:         Nectarine_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +160/-171  → USED +160/-171
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-36  → USED +14/-36
+  ID11: ORIG +2/-2  → USED +2/-2
+  ID12: ORIG +6/-6  → USED +6/-6
+  ID20: ORIG +7/-9  → USED +7/-9
+  ID21: ORIG +111/-108  → USED +111/-108
+  ID27: ORIG +20/-10  → USED +20/-10
+
+==============================
+Sampling method: original
+User:            ID21
+Dataset:         Nectarine_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +160/-171  → USED +160/-171
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-36  → USED +14/-36
+  ID11: ORIG +2/-2  → USED +2/-2
+  ID12: ORIG +6/-6  → USED +6/-6
+  ID20: ORIG +7/-9  → USED +7/-9
+  ID21: ORIG +111/-108  → USED +111/-108
+  ID27: ORIG +20/-10  → USED +20/-10
+
+==============================
+Sampling method: original
+User:            ID21
+Dataset:         Nectarine_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +111/-108  → USED +111/-108
+
+USER-LEVEL SAMPLING:
+  ID21: ORIG +111/-108  → USED +111/-108
+
+==============================
+Sampling method: original
+User:            ID25
+Dataset:         Carrot_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +76/-145  → USED +76/-145
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +11/-37  → USED +11/-37
+  ID11: ORIG +9/-8  → USED +9/-8
+  ID14: ORIG +11/-12  → USED +11/-12
+  ID15: ORIG +25/-23  → USED +25/-23
+  ID18: ORIG +16/-18  → USED +16/-18
+  ID25: ORIG +4/-47  → USED +4/-47
+
+==============================
+Sampling method: original
+User:            ID25
+Dataset:         Carrot_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +76/-145  → USED +76/-145
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +11/-37  → USED +11/-37
+  ID11: ORIG +9/-8  → USED +9/-8
+  ID14: ORIG +11/-12  → USED +11/-12
+  ID15: ORIG +25/-23  → USED +25/-23
+  ID18: ORIG +16/-18  → USED +16/-18
+  ID25: ORIG +4/-47  → USED +4/-47
+
+==============================
+Sampling method: original
+User:            ID25
+Dataset:         Carrot_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +4/-47  → USED +4/-47
+
+USER-LEVEL SAMPLING:
+  ID25: ORIG +4/-47  → USED +4/-47
+
+==============================
+Sampling method: original
+User:            ID25
+Dataset:         Almond_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +12/-85  → USED +12/-85
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +4/-3  → USED +4/-3
+  ID19: ORIG +6/-23  → USED +6/-23
+  ID25: ORIG +2/-59  → USED +2/-59
+
+==============================
+Sampling method: original
+User:            ID25
+Dataset:         Almond_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +12/-85  → USED +12/-85
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +4/-3  → USED +4/-3
+  ID19: ORIG +6/-23  → USED +6/-23
+  ID25: ORIG +2/-59  → USED +2/-59
+
+==============================
+Sampling method: original
+User:            ID25
+Dataset:         Almond_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +2/-59  → USED +2/-59
+
+USER-LEVEL SAMPLING:
+  ID25: ORIG +2/-59  → USED +2/-59
+
+==============================
+Sampling method: original
+User:            ID25
+Dataset:         Almond_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +36/-115  → USED +36/-115
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +4/-5  → USED +4/-5
+  ID13: ORIG +14/-25  → USED +14/-25
+  ID19: ORIG +5/-28  → USED +5/-28
+  ID25: ORIG +4/-49  → USED +4/-49
+  ID28: ORIG +9/-8  → USED +9/-8
+
+==============================
+Sampling method: original
+User:            ID25
+Dataset:         Almond_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +36/-115  → USED +36/-115
+
+USER-LEVEL SAMPLING:
+  ID11: ORIG +4/-5  → USED +4/-5
+  ID13: ORIG +14/-25  → USED +14/-25
+  ID19: ORIG +5/-28  → USED +5/-28
+  ID25: ORIG +4/-49  → USED +4/-49
+  ID28: ORIG +9/-8  → USED +9/-8
+
+==============================
+Sampling method: original
+User:            ID25
+Dataset:         Almond_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +4/-49  → USED +4/-49
+
+USER-LEVEL SAMPLING:
+  ID25: ORIG +4/-49  → USED +4/-49
+
+==============================
+Sampling method: original
+User:            ID20
+Dataset:         Nectarine_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +165/-190  → USED +165/-190
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +12/-31  → USED +12/-31
+  ID11: ORIG +17/-14  → USED +17/-14
+  ID12: ORIG +7/-7  → USED +7/-7
+  ID13: ORIG +33/-35  → USED +33/-35
+  ID20: ORIG +6/-16  → USED +6/-16
+  ID21: ORIG +42/-45  → USED +42/-45
+  ID27: ORIG +48/-42  → USED +48/-42
+
+==============================
+Sampling method: original
+User:            ID20
+Dataset:         Nectarine_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +165/-190  → USED +165/-190
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +12/-31  → USED +12/-31
+  ID11: ORIG +17/-14  → USED +17/-14
+  ID12: ORIG +7/-7  → USED +7/-7
+  ID13: ORIG +33/-35  → USED +33/-35
+  ID20: ORIG +6/-16  → USED +6/-16
+  ID21: ORIG +42/-45  → USED +42/-45
+  ID27: ORIG +48/-42  → USED +48/-42
+
+==============================
+Sampling method: original
+User:            ID20
+Dataset:         Nectarine_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +6/-16  → USED +6/-16
+
+USER-LEVEL SAMPLING:
+  ID20: ORIG +6/-16  → USED +6/-16
+
+==============================
+Sampling method: original
+User:            ID20
+Dataset:         Melon_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +71/-190  → USED +71/-190
+
+USER-LEVEL SAMPLING:
+  ID5: ORIG +9/-65  → USED +9/-65
+  ID9: ORIG +2/-48  → USED +2/-48
+  ID12: ORIG +10/-12  → USED +10/-12
+  ID19: ORIG +6/-19  → USED +6/-19
+  ID20: ORIG +4/-17  → USED +4/-17
+  ID21: ORIG +18/-16  → USED +18/-16
+  ID27: ORIG +22/-13  → USED +22/-13
+
+==============================
+Sampling method: original
+User:            ID20
+Dataset:         Melon_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +71/-190  → USED +71/-190
+
+USER-LEVEL SAMPLING:
+  ID5: ORIG +9/-65  → USED +9/-65
+  ID9: ORIG +2/-48  → USED +2/-48
+  ID12: ORIG +10/-12  → USED +10/-12
+  ID19: ORIG +6/-19  → USED +6/-19
+  ID20: ORIG +4/-17  → USED +4/-17
+  ID21: ORIG +18/-16  → USED +18/-16
+  ID27: ORIG +22/-13  → USED +22/-13
+
+==============================
+Sampling method: original
+User:            ID20
+Dataset:         Melon_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +4/-17  → USED +4/-17
+
+USER-LEVEL SAMPLING:
+  ID20: ORIG +4/-17  → USED +4/-17
+
+==============================
+Sampling method: original
+User:            ID20
+Dataset:         Nectarine_Crave
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +160/-171  → USED +160/-171
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-36  → USED +14/-36
+  ID11: ORIG +2/-2  → USED +2/-2
+  ID12: ORIG +6/-6  → USED +6/-6
+  ID20: ORIG +7/-9  → USED +7/-9
+  ID21: ORIG +111/-108  → USED +111/-108
+  ID27: ORIG +20/-10  → USED +20/-10
+
+==============================
+Sampling method: original
+User:            ID20
+Dataset:         Nectarine_Crave
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +160/-171  → USED +160/-171
+
+USER-LEVEL SAMPLING:
+  ID10: ORIG +14/-36  → USED +14/-36
+  ID11: ORIG +2/-2  → USED +2/-2
+  ID12: ORIG +6/-6  → USED +6/-6
+  ID20: ORIG +7/-9  → USED +7/-9
+  ID21: ORIG +111/-108  → USED +111/-108
+  ID27: ORIG +20/-10  → USED +20/-10
+
+==============================
+Sampling method: original
+User:            ID20
+Dataset:         Nectarine_Crave
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +7/-9  → USED +7/-9
+
+USER-LEVEL SAMPLING:
+  ID20: ORIG +7/-9  → USED +7/-9
+
+==============================
+Sampling method: original
+User:            ID20
+Dataset:         Melon_Use
+Pipeline:        global_ssl
+==============================
+
+Pipeline: global_ssl
+Sampling mode: original
+GLOBAL  ORIG +119/-100  → USED +119/-100
+
+USER-LEVEL SAMPLING:
+  ID12: ORIG +31/-34  → USED +31/-34
+  ID19: ORIG +36/-34  → USED +36/-34
+  ID20: ORIG +3/-13  → USED +3/-13
+  ID27: ORIG +49/-19  → USED +49/-19
+
+==============================
+Sampling method: original
+User:            ID20
+Dataset:         Melon_Use
+Pipeline:        global_supervised
+==============================
+
+Pipeline: global_supervised
+Sampling mode: original
+GLOBAL  ORIG +119/-100  → USED +119/-100
+
+USER-LEVEL SAMPLING:
+  ID12: ORIG +31/-34  → USED +31/-34
+  ID19: ORIG +36/-34  → USED +36/-34
+  ID20: ORIG +3/-13  → USED +3/-13
+  ID27: ORIG +49/-19  → USED +49/-19
+
+==============================
+Sampling method: original
+User:            ID20
+Dataset:         Melon_Use
+Pipeline:        personal_ssl
+==============================
+
+Pipeline: personal_ssl
+Sampling mode: original
+GLOBAL  ORIG +3/-13  → USED +3/-13
+
+USER-LEVEL SAMPLING:
+  ID20: ORIG +3/-13  → USED +3/-13
